@@ -3,103 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pera Teras - Digital Menu & Promotion</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Pera Teras - Digital Menu & Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SheetJS for Excel Upload -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --bg-color: #0b1120;
-            --card-bg: #152033;
+            --bg-color: #080c14;
+            --card-bg: rgba(21, 32, 51, 0.75);
+            --card-border: rgba(226, 183, 20, 0.2);
             --accent-gold: #e2b714;
+            --gold-gradient: linear-gradient(135deg, #f3d053 0%, #e2b714 50%, #9e7d0a 100%);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: #24344d;
+            --border-color: #1e2d42;
             --danger: #ef4444;
             --success: #22c55e;
             --whatsapp-color: #25d366;
+            --header-bg: rgba(8, 12, 20, 0.85);
+            --sidebar-bg: #04070d;
         }
+
+        /* Gündüz / Açık Tema Variables */
+        body.light-theme {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --card-border: rgba(226, 183, 20, 0.4);
+            --accent-gold: #b8860b;
+            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --header-bg: rgba(255, 255, 255, 0.9);
+            --sidebar-bg: #ffffff;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
         body.rtl { direction: rtl; text-align: right; }
         
         /* Layout Structure */
-        .sidebar { width: 280px; background-color: #060912; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 0; z-index: 10; flex-shrink: 0; }
+        .sidebar { width: 290px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 0; z-index: 10; flex-shrink: 0; transition: background-color 0.3s; }
         .brand-header { text-align: center; padding: 0 20px 15px 20px; border-bottom: 1px solid var(--border-color); }
-        .brand-header h1 { font-family: 'Cinzel', serif; color: var(--accent-gold); font-size: 1.8rem; letter-spacing: 2px; font-weight: 700; }
-        .brand-header p { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
-        .lang-bar { display: flex; justify-content: center; gap: 6px; padding: 12px 10px; border-bottom: 1px solid var(--border-color); background: #0b1120; }
-        .lang-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
-        .lang-btn.active, .lang-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(226, 183, 20, 0.1); }
+        .brand-header h1 { font-family: 'Cinzel', serif; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; letter-spacing: 2px; font-weight: 800; }
+        .brand-header p { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; letter-spacing: 1px; }
+        .lang-bar { display: flex; justify-content: center; gap: 6px; padding: 12px 10px; border-bottom: 1px solid var(--border-color); background: var(--bg-color); }
+        .lang-btn { background: rgba(0,0,0,0.03); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .lang-btn.active, .lang-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(226, 183, 20, 0.12); }
         .nav-categories { flex: 1; overflow-y: auto; padding: 15px 10px; }
-        .nav-btn { width: 100%; background: transparent; border: none; color: var(--text-muted); padding: 12px 16px; text-align: left; font-size: 0.9rem; font-weight: 600; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 6px; white-space: nowrap; }
-        .nav-btn.active, .nav-btn:hover { background-color: var(--accent-gold); color: #000; }
+        .nav-btn { width: 100%; background: transparent; border: none; color: var(--text-muted); padding: 12px 16px; text-align: left; font-size: 0.88rem; font-weight: 600; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 6px; white-space: nowrap; transition: 0.3s; }
+        .nav-btn.active, .nav-btn:hover { background: var(--gold-gradient); color: #000; font-weight: 700; }
 
         /* Main Content */
-        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
-        .content-header { padding: 15px 20px; background: rgba(11, 17, 32, 0.95); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .category-title { font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--accent-gold); }
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; background: radial-gradient(circle at top right, rgba(226, 183, 20, 0.05), transparent 40%); }
+        .content-header { padding: 15px 20px; background: var(--header-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px; z-index: 5; }
+        .header-top-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .category-title { font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--accent-gold); font-weight: 700; }
         
-        .quick-actions-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .action-btn-pill { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 14px; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.2s; }
+        .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .search-box { position: relative; width: 100%; max-width: 280px; }
+        .search-box input { background: rgba(0,0,0,0.05); border: 1px solid var(--border-color); padding: 8px 12px 8px 36px; border-radius: 20px; color: var(--text-main); font-size: 0.85rem; width: 100%; }
+        .search-box input:focus { border-color: var(--accent-gold); outline: none; }
+        .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem; }
+
+        .theme-toggle-btn { background: rgba(0,0,0,0.05); border: 1px solid var(--border-color); color: var(--text-main); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
+        .theme-toggle-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+
+        .quick-actions-bar { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+        .action-btn-pill { background: rgba(0,0,0,0.04); border: 1px solid var(--border-color); color: var(--text-main); padding: 7px 13px; border-radius: 20px; text-decoration: none; font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.3s; white-space: nowrap; }
         .action-btn-pill:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
-        .action-btn-pill.btn-whatsapp { border-color: var(--whatsapp-color); color: var(--whatsapp-color); background: rgba(37, 211, 102, 0.05); }
-        .action-btn-pill.btn-admin { border-color: var(--accent-gold); }
+        .action-btn-pill.btn-whatsapp { border-color: rgba(37, 211, 102, 0.4); color: var(--whatsapp-color); background: rgba(37, 211, 102, 0.05); }
+
+        /* Social & Review Banner Area */
+        .social-banner-strip { background: rgba(226, 183, 20, 0.08); border-bottom: 1px solid var(--card-border); padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.78rem; flex-wrap: wrap; }
+        .social-banner-text { color: var(--text-main); font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .social-banner-text i { color: #e1306c; font-size: 1rem; }
 
         /* Menü Izgarası */
-        .menu-grid { flex: 1; padding: 20px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; align-content: start; }
-        .menu-item { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
-        .badge-tag { position: absolute; top: 10px; left: 10px; background: var(--accent-gold); color: #000; font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 12px; z-index: 2; text-transform: uppercase; }
-        .item-img-container { width: 100%; height: 165px; background-color: #060912; overflow: hidden; }
-        .item-img { width: 100%; height: 100%; object-fit: cover; }
-        .item-body { padding: 14px; display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
-        .item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-        .item-name { font-size: 1rem; font-weight: 600; }
-        .item-price { font-size: 1.05rem; font-weight: 700; color: var(--accent-gold); white-space: nowrap; }
+        .menu-grid { flex: 1; padding: 20px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; align-content: start; }
+        .menu-item { background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid var(--card-border); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; position: relative; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .menu-item:hover { transform: translateY(-4px); border-color: var(--accent-gold); }
+        .badge-tag { position: absolute; top: 12px; left: 12px; background: var(--gold-gradient); color: #000; font-size: 0.68rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; z-index: 2; text-transform: uppercase; }
+        .item-img-container { width: 100%; height: 170px; background-color: rgba(0,0,0,0.1); overflow: hidden; }
+        .item-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .menu-item:hover .item-img { transform: scale(1.08); }
+        .item-body { padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+        .item-name { font-size: 1.02rem; font-weight: 700; color: var(--text-main); }
+        .item-price { font-size: 1.1rem; font-weight: 800; color: var(--accent-gold); white-space: nowrap; }
+        .item-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; }
+        .item-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 8px; margin-top: auto; }
 
-        /* Pop-up Reklam Kartı */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        /* Modallar */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
         .modal.active { display: flex; }
-        .promo-card-v2 { background: #0c1322; border: 1px solid var(--accent-gold); border-radius: 16px; width: 100%; max-width: 500px; overflow: hidden; position: relative; max-height: 90vh; overflow-y: auto; }
-        .promo-close-btn { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; font-size: 1.1rem; }
+        .promo-card-v2 { background: var(--card-bg); border: 1px solid var(--accent-gold); border-radius: 18px; width: 100%; max-width: 500px; overflow: hidden; position: relative; max-height: 90vh; display: flex; flex-direction: column; color: var(--text-main); }
+        .promo-close-btn { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; font-size: 1.1rem; }
+        
+        /* Slider Yapısı */
+        .slider-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex: 1; }
+        .slider-container::-webkit-scrollbar { display: none; }
+        .slide-item { min-width: 100%; scroll-snap-align: start; display: flex; flex-direction: column; }
         .promo-banner { width: 100%; height: 220px; object-fit: cover; }
-        .promo-content { padding: 20px 15px; text-align: center; }
-        .promo-badge-pill { background: var(--accent-gold); color: #000; font-weight: 800; font-size: 0.75rem; padding: 6px 16px; border-radius: 20px; display: inline-block; text-transform: uppercase; margin-bottom: 12px; }
-        .promo-heading { font-family: 'Cinzel', serif; font-size: 1.3rem; color: #fff; margin-bottom: 10px; }
-        .promo-text { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px; }
-        .promo-btn-inspect { background: #152033; border: 1px solid var(--border-color); color: #fff; padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+        .promo-content { padding: 20px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .slider-dots { display: flex; justify-content: center; gap: 8px; padding: 12px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--border-color); }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-color); cursor: pointer; transition: 0.3s; }
+        .dot.active { background: var(--accent-gold); width: 22px; border-radius: 10px; }
 
-        /* Admin Paneli */
-        .modal-content-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; width: 100%; max-width: 850px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
-        .modal-header-bar { padding: 15px 20px; background: #060912; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .modal-header-bar h3 { font-family: 'Cinzel', serif; color: var(--accent-gold); }
-        .modal-body-pad { padding: 15px; overflow-y: auto; flex: 1; }
-        .login-box { max-width: 380px; margin: 0 auto; background: #060912; padding: 25px; border-radius: 12px; border: 1px solid var(--border-color); }
+        /* Admin Paneli & Sekmeler */
+        .modal-content-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; width: 100%; max-width: 980px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; color: var(--text-main); }
+        .modal-header-bar { padding: 15px 20px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .admin-nav-tabs { display: flex; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); overflow-x: auto; }
+        .admin-tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 12px 18px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+        .admin-tab-btn.active { color: var(--accent-gold); border-bottom-color: var(--accent-gold); background: rgba(226, 183, 20, 0.05); }
+        .admin-tab-content { display: none; padding: 18px; overflow-y: auto; flex: 1; }
+        .admin-tab-content.active { display: block; }
+
+        .login-box { max-width: 380px; margin: 0 auto; background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid var(--accent-gold); color: var(--text-main); }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
-        input, textarea { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 10px; border-radius: 6px; width: 100%; font-size: 0.85rem; font-family: inherit; }
+        input, textarea, select { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 10px; border-radius: 6px; width: 100%; font-size: 0.85rem; font-family: inherit; }
         .btn { padding: 8px 14px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; }
-        .btn-gold { background: var(--accent-gold); color: #000; }
+        .btn-gold { background: var(--gold-gradient); color: #000; font-weight: 700; }
         .btn-danger { background: var(--danger); color: #fff; }
         .btn-success { background: var(--success); color: #fff; }
-        .file-upload-btn { background: #24344d; color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; border: 1px solid var(--border-color); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-        .admin-table-wrapper { overflow-x: auto; max-height: 35vh; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 600px; }
-        th, td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; vertical-align: middle; }
-        th { background: #060912; color: var(--accent-gold); position: sticky; top: 0; }
+        .file-upload-btn { background: rgba(0,0,0,0.1); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; border: 1px solid var(--border-color); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+        
+        .admin-table-wrapper { overflow-x: auto; max-height: 48vh; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 850px; }
+        th, td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-size: 0.82rem; vertical-align: middle; }
+        th { background: rgba(0,0,0,0.3); color: var(--accent-gold); position: sticky; top: 0; }
 
-        /* MOBİL UYUMLULUK KODLARI (RESPONSIVE FIX) */
+        .icon-selector-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+        .icon-pill { background: rgba(0,0,0,0.05); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
+        .icon-pill:hover { border-color: var(--accent-gold); }
+
+        /* Switch Toggle (Aktif/Pasif) */
+        .switch { position: relative; display: inline-block; width: 42px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider-toggle { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 22px; }
+        .slider-toggle:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider-toggle { background-color: var(--success); }
+        input:checked + .slider-toggle:before { transform: translateX(20px); }
+
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-color); padding: 10px 0; }
-            .brand-header { padding: 0 10px 10px 10px; }
-            .brand-header h1 { font-size: 1.4rem; }
+            .brand-header h1 { font-size: 1.35rem; }
             .nav-categories { display: flex; overflow-x: auto; padding: 8px 10px; gap: 8px; scrollbar-width: none; }
             .nav-categories::-webkit-scrollbar { display: none; }
-            .nav-btn { width: auto; flex-shrink: 0; margin-bottom: 0; padding: 8px 14px; font-size: 0.85rem; }
-            .quick-actions-bar { width: 100%; overflow-x: auto; padding-bottom: 5px; flex-wrap: nowrap; }
-            .action-btn-pill { flex-shrink: 0; font-size: 0.75rem; padding: 6px 12px; }
-            .menu-grid { grid-template-columns: 1fr; padding: 12px; gap: 12px; }
-            .content-header { padding: 12px; gap: 10px; }
+            .nav-btn { width: auto; flex-shrink: 0; margin-bottom: 0; padding: 8px 14px; font-size: 0.82rem; }
+            .menu-grid { grid-template-columns: 1fr; padding: 12px; gap: 14px; }
+            .content-header { padding: 10px 12px; gap: 8px; }
+            .search-box { max-width: 100%; }
+            .social-banner-strip { font-size: 0.72rem; flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
@@ -124,30 +182,76 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="content-header">
-            <h2 class="category-title" id="currentCategoryTitle">Menü</h2>
+            <div class="header-top-row">
+                <h2 class="category-title" id="currentCategoryTitle">Menü</h2>
+                <div class="header-controls">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Menüde lezzet ara..." oninput="handleSearch()">
+                    </div>
+                    <button class="theme-toggle-btn" onclick="toggleTheme()" title="Açık/Koyu Tema"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
+                </div>
+            </div>
             <div class="quick-actions-bar">
-                <button class="action-btn-pill" onclick="openPromoModal()"><i class="fa-solid fa-bullhorn" style="color:var(--accent-gold)"></i> <span>Etkinlikler</span></button>
-                <a href="https://maps.google.com" target="_blank" class="action-btn-pill"><i class="fa-solid fa-location-dot" style="color:#ef4444"></i> <span>Yol Tarifi</span></a>
-                <a href="tel:05551234567" class="action-btn-pill"><i class="fa-solid fa-phone" style="color:#3b82f6"></i> <span>Ara</span></a>
-                <a href="https://wa.me/905551234567" target="_blank" class="action-btn-pill btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span></a>
+                <button class="action-btn-pill" onclick="openPromoModal()"><i class="fa-solid fa-bullhorn" style="color:var(--accent-gold)"></i> <span>Pera Teras'ta Ne Var?</span></button>
+                <button class="action-btn-pill" onclick="openLocationModal()"><i class="fa-solid fa-location-dot" style="color:#ef4444"></i> <span>Yol Tarifi</span></button>
+                <a id="actionCallBtn" href="tel:05551234567" class="action-btn-pill"><i class="fa-solid fa-phone" style="color:#3b82f6"></i> <span>Ara</span></a>
+                <a id="actionWhatsappBtn" href="https://wa.me/905551234567" target="_blank" class="action-btn-pill btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span></a>
                 <button class="action-btn-pill btn-admin" onclick="openAdminLoginModal()"><i class="fa-solid fa-lock"></i> <span>Yönetim</span></button>
             </div>
         </div>
+
+        <!-- Instagram & Google Yorum Şeridi -->
+        <div class="social-banner-strip">
+            <div class="social-banner-text">
+                <i class="fa-brands fa-instagram"></i>
+                <span>Teras manzaralı fotoğrafınızı <strong>@perateras</strong> etiketiyle paylaşın, hikayemize ekleyelim!</span>
+            </div>
+            <a id="googleReviewBtn" href="https://maps.google.com" target="_blank" class="action-btn-pill" style="padding:4px 10px; font-size:0.75rem; border-color:var(--accent-gold);">
+                <i class="fa-solid fa-star" style="color:#f59e0b;"></i> Google'da Değerlendirin
+            </a>
+        </div>
+
         <div class="menu-grid" id="menuGrid"></div>
     </div>
 
-    <!-- Pop-up Reklam Kartı -->
+    <!-- Sürüklemeli (Slider) Pop-up Modalı -->
     <div class="modal" id="promoModal">
         <div class="promo-card-v2">
             <div class="promo-close-btn" onclick="closePromoModal()">&times;</div>
-            <img id="promoImg" src="" class="promo-banner" alt="Kampanya">
-            <div class="promo-content">
-                <div class="promo-badge-pill" id="promoBadge"><i class="fa-solid fa-fire"></i> PERA TERAS AYRICALIĞI</div>
-                <h3 class="promo-heading" id="promoTitle">CANLI MÜZİK, MANGAL BAŞI & PAZAR KAHVALTISI</h3>
-                <p class="promo-text" id="promoDesc">Eşsiz teras manzarasında her Çarşamba, Cuma, Cumartesi ve Pazar günleri Canlı Müzik performansları, Pazar günleri serpme kahvaltı keyfi ve kendi masanızda pişen özel Mangal Başı lezzetleri Pera Teras'ta sizi bekliyor!</p>
-                <div>
-                    <button class="promo-btn-inspect" onclick="closePromoModal()">Menüyü İncele</button>
+            <div class="slider-container" id="sliderContainer" onscroll="updateSliderDots()"></div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </div>
+    </div>
+
+    <!-- Yol Tarifi Modalı -->
+    <div class="modal" id="locationModal">
+        <div class="promo-card-v2" style="max-width:450px;">
+            <div class="promo-close-btn" onclick="closeLocationModal()">&times;</div>
+            <img id="locImg" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800" class="promo-banner" alt="Pera Teras Dış Görünüş">
+            <div class="promo-content" style="text-align:left; align-items:flex-start;">
+                <h3 style="color:var(--accent-gold); font-family:'Cinzel',serif; font-size:1.3rem; margin-bottom:8px;"><i class="fa-solid fa-map-pin"></i> Pera Teras Konum</h3>
+                <p style="font-size:0.85rem; color:var(--text-main); font-weight:600; margin-bottom:6px;" id="locAddress">Dereağzı Mah. Deniz Yolu Caddesi No:19 Gürpınar Beylikdüzü/İstanbul</p>
+                <div style="background:rgba(226, 183, 20, 0.1); border-left:3px solid var(--accent-gold); padding:8px 12px; border-radius:4px; font-size:0.8rem; color:var(--text-muted); margin-bottom:15px;" id="locDirections">
+                    📌 <strong>Tarif:</strong> Beylikdüzü Balık Hali Çaprazında kalıyoruz.
                 </div>
+                <a id="locMapLink" href="https://maps.google.com" target="_blank" class="btn btn-gold" style="width:100%; justify-content:center; text-decoration:none;"><i class="fa-solid fa-route"></i> Google Maps ile Yol Tarifi Al</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ürün Detay Popup Modalı -->
+    <div class="modal" id="productDetailModal">
+        <div class="promo-card-v2" style="max-width:420px;">
+            <div class="promo-close-btn" onclick="closeProductDetailModal()">&times;</div>
+            <img id="detailImg" src="" class="promo-banner">
+            <div class="promo-content" style="text-align:left; align-items:flex-start;">
+                <div style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-bottom:8px;">
+                    <h3 id="detailName" style="color:var(--text-main); font-size:1.2rem;"></h3>
+                    <span id="detailPrice" style="color:var(--accent-gold); font-weight:800; font-size:1.2rem;"></span>
+                </div>
+                <p id="detailDesc" style="color:var(--text-muted); font-size:0.88rem; line-height:1.5; margin-bottom:15px;"></p>
+                <div id="detailAllergens" style="font-size:1.1rem;"></div>
             </div>
         </div>
     </div>
@@ -171,45 +275,38 @@
         </div>
     </div>
 
-    <!-- Yönetici Paneli -->
+    <!-- VIP Yönetim Paneli (Sekmeli) -->
     <div class="modal" id="adminModal">
         <div class="modal-content-box">
             <div class="modal-header-bar">
-                <h3><i class="fa-solid fa-sliders"></i> Yönetim Paneli</h3>
+                <h3><i class="fa-solid fa-sliders"></i> VIP Yönetim Paneli</h3>
                 <button class="btn btn-danger" onclick="closeAdminModal()">&times;</button>
             </div>
-            <div class="modal-body-pad">
-                <!-- Pop-up Yönetimi -->
-                <div style="background:#060912; padding:15px; border-radius:10px; margin-bottom:20px; border:1px solid var(--accent-gold);">
-                    <h4 style="color:var(--accent-gold); margin-bottom:10px; font-size:0.95rem;"><i class="fa-solid fa-bullhorn"></i> Açılış Pop-up Reklamını Düzenle</h4>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" class="form-group">
-                        <div>
-                            <label>Rozet Metni</label>
-                            <input type="text" id="adminPromoBadge" onchange="updatePromoConfig()">
-                        </div>
-                        <div>
-                            <label>Görsel Yükle</label>
-                            <label class="file-upload-btn" style="width:100%; justify-content:center;">
-                                <i class="fa-solid fa-image"></i> Resmi Bilgisayardan Seç
-                                <input type="file" accept="image/*" style="display:none;" onchange="handleLocalUpload(this.files[0], (url)=>{ promoConfig.img=url; saveData(); document.getElementById('promoImg').src=url; })">
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Kampanya Başlığı</label>
-                        <input type="text" id="adminPromoTitle" onchange="updatePromoConfig()">
-                    </div>
-                    <div class="form-group">
-                        <label>Kampanya Açıklaması</label>
-                        <textarea id="adminPromoDesc" rows="3" onchange="updatePromoConfig()"></textarea>
-                    </div>
-                </div>
+            <div class="admin-nav-tabs">
+                <button class="admin-tab-btn active" onclick="switchAdminTab('tabPromos')"><i class="fa-solid fa-bullhorn"></i> Pop-up / Kampanyalar</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('tabProducts')"><i class="fa-solid fa-utensils"></i> Menü Ürünleri</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('tabExcel')"><i class="fa-solid fa-file-excel"></i> Toplu Excel Yükleme</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('tabContact')"><i class="fa-solid fa-gear"></i> İletişim & Konum</button>
+            </div>
 
-                <!-- Ürün Yönetimi -->
+            <!-- TAB 1: Pop-up / Kampanya Yönetimi -->
+            <div class="admin-tab-content active" id="tabPromos">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h4 style="color:var(--text-main); font-size:0.95rem;"><i class="fa-solid fa-utensils"></i> Menü Ürünleri</h4>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn btn-success" onclick="addNewRow()"><i class="fa-solid fa-plus"></i> Ürün Ekle</button>
+                    <h4 style="color:var(--accent-gold);"><i class="fa-solid fa-images"></i> Sürüklemeli Kampanya Kartları</h4>
+                    <button class="btn btn-success" onclick="addPromoCard()"><i class="fa-solid fa-plus"></i> Yeni Kart Ekle</button>
+                </div>
+                <div id="adminPromoList"></div>
+            </div>
+
+            <!-- TAB 2: Menü Ürün Yönetimi (Kategoriye Göre Filtreli & Aktif/Pasif Seçenekli) -->
+            <div class="admin-tab-content" id="tabProducts">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <label style="font-size:0.85rem; color:var(--accent-gold);">Kategori Seçin:</label>
+                        <select id="adminCategoryFilter" style="width:200px;" onchange="renderAdminTable()"></select>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-success" onclick="addNewRow()"><i class="fa-solid fa-plus"></i> Bu Kategoriye Ürün Ekle</button>
                         <button class="btn btn-danger" onclick="resetToDefault()"><i class="fa-solid fa-rotate-left"></i> Sıfırla</button>
                     </div>
                 </div>
@@ -218,16 +315,68 @@
                     <table>
                         <thead>
                             <tr>
+                                <th>Durum (Menüde Göster)</th>
                                 <th>Kategori</th>
                                 <th>Ürün Adı</th>
+                                <th>Açıklama / İçerik</th>
                                 <th>Fiyat</th>
                                 <th>Rozet</th>
+                                <th>Alerjen / Özellik İkonu</th>
                                 <th>Resim</th>
                                 <th>Sil</th>
                             </tr>
                         </thead>
                         <tbody id="adminTableBody"></tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: Excel İle Toplu Yükleme -->
+            <div class="admin-tab-content" id="tabExcel">
+                <div style="background:rgba(0,0,0,0.1); border:1px dashed var(--accent-gold); padding:25px; border-radius:12px; text-align:center;">
+                    <i class="fa-solid fa-file-excel" style="font-size:3rem; color:var(--success); margin-bottom:15px;"></i>
+                    <h4 style="color:var(--text-main); margin-bottom:8px;">Excel İle Toplu Ürün Yükleme</h4>
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:20px;">Excel dosyanızdaki sütun başlıkları şu şekilde olmalıdır: <strong>Kategori, UrunAdi, Aciklama, Fiyat, Rozet, Ikonlar, Aktif</strong></p>
+                    <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;">
+                        <label class="btn btn-gold" style="cursor:pointer;">
+                            <i class="fa-solid fa-upload"></i> Excel Dosyası Seç (.xlsx)
+                            <input type="file" id="excelInput" accept=".xlsx, .xls" style="display:none;" onchange="handleExcelUpload(event)">
+                        </label>
+                        <button class="btn btn-success" onclick="downloadExcelTemplate()"><i class="fa-solid fa-download"></i> Örnek Şablon İndir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: İletişim & Konum Ayarları -->
+            <div class="admin-tab-content" id="tabContact">
+                <div style="max-width:550px;">
+                    <div class="form-group">
+                        <label>Telefon Numarası (Arama İçin)</label>
+                        <input type="text" id="cfgPhone" onchange="saveContactConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp Numarası (Ülke koduyla Örn: 905551234567)</label>
+                        <input type="text" id="cfgWhatsapp" onchange="saveContactConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label>Açık Adres Metni</label>
+                        <input type="text" id="cfgAddress" onchange="saveContactConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label>Yol Tarifi İpucu / Notu</label>
+                        <input type="text" id="cfgDirections" onchange="saveContactConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label>Google Maps / Yorum Linki</label>
+                        <input type="text" id="cfgMapLink" onchange="saveContactConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label>Dış Mekan Fotoğrafı</label>
+                        <label class="file-upload-btn">
+                            <i class="fa-solid fa-image"></i> Görsel Değiştir
+                            <input type="file" accept="image/*" style="display:none;" onchange="handleLocalUpload(this.files[0], (url)=>{ contactConfig.img=url; saveContactConfig(); })">
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -242,29 +391,52 @@
         }
 
         const defaultMenuData = [
-            { category: "Sıcak İçecekler", name: "Türk Kahvesi", price: "175,00 ₺", badge: "Popüler", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500" },
-            { category: "Soğuk İçecekler", name: "Limonata", price: "185,00 ₺", badge: "Taze", img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500" },
-            { category: "Izgaralar", name: "Karışık Mangal", price: "1.250,00 ₺", badge: "Spesyal", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500" }
+            { category: "Sıcak İçecekler", name: "Türk Kahvesi", desc: "Özel kavrulmuş çekirdekler, çifte kavrulmuş lokum ve su ile servis edilir.", price: "175,00 ₺", badge: "Popüler", icons: "👑", active: true, img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500" },
+            { category: "Soğuk İçecekler", name: "Ev Yapımı Limonata", desc: "Taze sıkılmış Bodrum limonları, taze nane yaprakları ve buz ile.", price: "185,00 ₺", badge: "Taze", icons: "🌱", active: true, img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500" },
+            { category: "Izgaralar", name: "Karışık Pera Mangal", desc: "Kuzu pirzola, kasap köfte, tavuk külbastı, közlenmiş biber, domates ve pilav ile.", price: "1.250,00 ₺", badge: "Spesyal", icons: "👑,🌶️", active: true, img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500" }
         ];
 
-        const defaultPromo = {
-            badge: "PERA TERAS AYRICALIĞI",
-            title: "CANLI MÜZİK, MANGAL BAŞI & PAZAR KAHVALTISI",
-            desc: "Eşsiz teras manzarasında her Çarşamba, Cuma, Cumartesi ve Pazar günleri Canlı Müzik performansları, Pazar günleri serpme kahvaltı keyfi ve kendi masanızda pişen özel Mangal Başı lezzetleri Pera Teras'ta sizi bekliyor!",
+        const defaultPromos = [
+            { badge: "PERA TERAS'TA NELER VAR?", title: "EŞSİZ TERAS KEYFİ", desc: "Manzaranın ve lezzetin buluştuğu nokta Pera Teras'a hoş geldiniz!", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800" },
+            { badge: "ÖZEL KAMPANYA", title: "RAKINI KAP GEL!", desc: "Fiks menü lezzetlerimiz ve canlı müzik eşliğinde kendi içeceğinizle teras keyfi yapın.", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800" },
+            { badge: "HAFTA SONU ÖZEL", title: "SERPME TERAS KAHVALTISI", desc: "Pazar günleri muhteşem manzara eşliğinde yöresel lezzetlerle dolu serpme kahvaltı.", img: "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800" },
+            { badge: "BU HAFTAYA ÖZEL", title: "ÇARŞAMBA & CUMA CANLI MÜZİK", desc: "Bu haftaya özel sürpriz ikramlar ve canlı müzik performanslarını kaçırmayın!", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800" }
+        ];
+
+        const defaultContact = {
+            phone: "05551234567",
+            whatsapp: "905551234567",
+            address: "Dereağzı Mah. Deniz Yolu Caddesi No:19 Gürpınar Beylikdüzü/İstanbul",
+            directions: "📌 Tarif: Beylikdüzü Balık Hali Çaprazında kalıyoruz.",
+            mapLink: "https://maps.google.com",
             img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800"
         };
 
-        let menuData = JSON.parse(localStorage.getItem('pera_menu_v9')) || defaultMenuData;
-        let promoConfig = JSON.parse(localStorage.getItem('pera_promo_v9')) || defaultPromo;
+        let menuData = JSON.parse(localStorage.getItem('pera_menu_v12')) || defaultMenuData;
+        let promoList = JSON.parse(localStorage.getItem('pera_promos_v12')) || defaultPromos;
+        let contactConfig = JSON.parse(localStorage.getItem('pera_contact_v12')) || defaultContact;
+        
         let currentLang = 'tr';
+        let currentCategory = '';
         let translationCache = {};
 
         function saveData() { 
-            localStorage.setItem('pera_menu_v9', JSON.stringify(menuData));
-            localStorage.setItem('pera_promo_v9', JSON.stringify(promoConfig));
+            localStorage.setItem('pera_menu_v12', JSON.stringify(menuData));
+            localStorage.setItem('pera_promos_v12', JSON.stringify(promoList));
+            localStorage.setItem('pera_contact_v12', JSON.stringify(contactConfig));
         }
 
-        // OTOMATİK ÇEVİRİ MOTORU (Google Translate Integration)
+        /* GÜNDÜZ / GECE TEMA DEĞİŞTİRME */
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const icon = document.getElementById('themeIcon');
+            if(document.body.classList.contains('light-theme')) {
+                icon.className = 'fa-solid fa-sun';
+            } else {
+                icon.className = 'fa-solid fa-moon';
+            }
+        }
+
         async function translateText(text, targetLang) {
             if (!text || targetLang === 'tr') return text;
             const key = `${text}_${targetLang}`;
@@ -276,36 +448,69 @@
                 const translated = data[0].map(item => item[0]).join('');
                 translationCache[key] = translated;
                 return translated;
-            } catch (err) {
-                return text;
-            }
+            } catch (err) { return text; }
         }
 
+        /* POP-UP SLIDER SİSTEMİ */
         function openPromoModal() {
-            document.getElementById('promoBadge').innerHTML = `<i class="fa-solid fa-fire"></i> ${promoConfig.badge}`;
-            document.getElementById('promoTitle').textContent = promoConfig.title;
-            document.getElementById('promoDesc').textContent = promoConfig.desc;
-            document.getElementById('promoImg').src = promoConfig.img;
+            const container = document.getElementById('sliderContainer');
+            const dots = document.getElementById('sliderDots');
+            container.innerHTML = '';
+            dots.innerHTML = '';
+
+            promoList.forEach((promo, idx) => {
+                container.innerHTML += `
+                    <div class="slide-item">
+                        <img src="${promo.img}" class="promo-banner">
+                        <div class="promo-content">
+                            <div class="promo-badge-pill" style="background:var(--gold-gradient); color:#000; font-weight:800; font-size:0.75rem; padding:6px 16px; border-radius:20px; text-transform:uppercase; margin-bottom:10px;"><i class="fa-solid fa-fire"></i> ${promo.badge}</div>
+                            <h3 class="promo-heading" style="font-family:'Cinzel',serif; font-size:1.3rem; color:var(--text-main); margin-bottom:8px;">${promo.title}</h3>
+                            <p class="promo-text" style="color:var(--text-muted); font-size:0.85rem; line-height:1.4;">${promo.desc}</p>
+                        </div>
+                    </div>`;
+                dots.innerHTML += `<div class="dot ${idx === 0 ? 'active' : ''}" onclick="scrollToSlide(${idx})"></div>`;
+            });
+
             document.getElementById('promoModal').classList.add('active');
         }
 
         function closePromoModal() { document.getElementById('promoModal').classList.remove('active'); }
 
-        function updatePromoConfig() {
-            promoConfig.badge = document.getElementById('adminPromoBadge').value;
-            promoConfig.title = document.getElementById('adminPromoTitle').value;
-            promoConfig.desc = document.getElementById('adminPromoDesc').value;
-            saveData();
+        function scrollToSlide(idx) {
+            const container = document.getElementById('sliderContainer');
+            container.scrollTo({ left: container.clientWidth * idx, behavior: 'smooth' });
+        }
+
+        function updateSliderDots() {
+            const container = document.getElementById('sliderContainer');
+            const slideIdx = Math.round(container.scrollLeft / container.clientWidth);
+            document.querySelectorAll('.dot').forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === slideIdx);
+            });
+        }
+
+        /* YOL TARİFİ MODALI & İLETİŞİM */
+        function openLocationModal() {
+            document.getElementById('locImg').src = contactConfig.img;
+            document.getElementById('locAddress').textContent = contactConfig.address;
+            document.getElementById('locDirections').innerHTML = contactConfig.directions;
+            document.getElementById('locMapLink').href = contactConfig.mapLink;
+            document.getElementById('locationModal').classList.add('active');
+        }
+        function closeLocationModal() { document.getElementById('locationModal').classList.remove('active'); }
+
+        function updateContactUI() {
+            document.getElementById('actionCallBtn').href = `tel:${contactConfig.phone}`;
+            document.getElementById('actionWhatsappBtn').href = `https://wa.me/${contactConfig.whatsapp}`;
+            document.getElementById('googleReviewBtn').href = contactConfig.mapLink;
         }
 
         async function setLanguage(lang) {
             currentLang = lang;
             document.body.classList.toggle('rtl', lang === 'ar');
-            
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.innerText.toLowerCase().includes(lang));
             });
-
             await renderCategories();
         }
 
@@ -332,28 +537,58 @@
         }
 
         async function selectCategory(rawCat, displayCat, btn) {
+            currentCategory = rawCat;
+            document.getElementById('searchInput').value = '';
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
             document.getElementById('currentCategoryTitle').textContent = displayCat;
 
+            // Sadece Aktif (active !== false) Olan Ürünleri Filtrele
+            const filtered = menuData.filter(i => i.category === rawCat && i.active !== false);
+            await renderGridItems(filtered);
+        }
+
+        async function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            if(!query) {
+                const filtered = menuData.filter(i => i.category === currentCategory && i.active !== false);
+                await renderGridItems(filtered);
+                return;
+            }
+            const filtered = menuData.filter(i => (i.active !== false) && (i.name.toLowerCase().includes(query) || (i.desc && i.desc.toLowerCase().includes(query))));
+            await renderGridItems(filtered);
+        }
+
+        async function renderGridItems(items) {
             const grid = document.getElementById('menuGrid');
-            grid.innerHTML = '<div style="color:var(--accent-gold); padding:20px;">Çeviriler yükleniyor...</div>';
+            if(items.length === 0) {
+                grid.innerHTML = '<div style="color:var(--text-muted); padding:20px;">Bu kategoride aktif ürün bulunmamaktadır.</div>';
+                return;
+            }
+            grid.innerHTML = '<div style="color:var(--accent-gold); padding:20px;">Yükleniyor...</div>';
 
-            const filtered = menuData.filter(i => i.category === rawCat);
             let htmlContent = '';
-
-            for (const item of filtered) {
+            for (const item of items) {
+                const realIndex = menuData.indexOf(item);
                 const transName = await translateText(item.name, currentLang);
+                const transDesc = item.desc ? await translateText(item.desc, currentLang) : '';
                 const transBadge = item.badge ? await translateText(item.badge, currentLang) : '';
 
                 htmlContent += `
-                    <div class="menu-item">
+                    <div class="menu-item" onclick="openProductDetail(${realIndex})">
                         ${transBadge ? `<div class="badge-tag">${transBadge}</div>` : ''}
                         <div class="item-img-container"><img src="${item.img}" class="item-img"></div>
                         <div class="item-body">
-                            <div class="item-header">
-                                <div class="item-name">${transName}</div>
-                                <div class="item-price">${item.price}</div>
+                            <div>
+                                <div class="item-header">
+                                    <div class="item-name">${transName}</div>
+                                    <div class="item-price">${item.price}</div>
+                                </div>
+                                ${transDesc ? `<div class="item-desc">${transDesc}</div>` : ''}
+                            </div>
+                            <div class="item-footer">
+                                <span style="font-size:1.1rem;">${item.icons || ''}</span>
+                                <span style="font-size:0.75rem; color:var(--accent-gold); font-weight:600;">İncele <i class="fa-solid fa-chevron-right"></i></span>
                             </div>
                         </div>
                     </div>`;
@@ -361,59 +596,218 @@
             grid.innerHTML = htmlContent;
         }
 
+        async function openProductDetail(index) {
+            const item = menuData[index];
+            document.getElementById('detailImg').src = item.img;
+            document.getElementById('detailName').textContent = await translateText(item.name, currentLang);
+            document.getElementById('detailPrice').textContent = item.price;
+            document.getElementById('detailDesc').textContent = await translateText(item.desc || '', currentLang);
+            document.getElementById('detailAllergens').textContent = item.icons || '';
+            document.getElementById('productDetailModal').classList.add('active');
+        }
+
+        function closeProductDetailModal() { document.getElementById('productDetailModal').classList.remove('active'); }
+
+        /* YÖNETİM PANELİ (ADMIN) */
         function openAdminLoginModal() { document.getElementById('adminLoginModal').classList.add('active'); }
         function closeAdminLoginModal() { document.getElementById('adminLoginModal').classList.remove('active'); }
 
         function submitAdminLogin() {
             if(document.getElementById('loginUser').value === "pera" && document.getElementById('loginPass').value === "Aytac.123456") {
                 closeAdminLoginModal();
+                populateAdminCategoryDropdown();
                 renderAdminTable();
-                
-                document.getElementById('adminPromoBadge').value = promoConfig.badge;
-                document.getElementById('adminPromoTitle').value = promoConfig.title;
-                document.getElementById('adminPromoDesc').value = promoConfig.desc;
-                
+                renderAdminPromos();
+                loadContactToAdmin();
                 document.getElementById('adminModal').classList.add('active');
             } else { alert("Hatalı Giriş!"); }
         }
 
-        function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); renderCategories(); }
+        function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); renderCategories(); updateContactUI(); }
 
-        function renderAdminTable() {
-            const tbody = document.getElementById('adminTableBody');
-            tbody.innerHTML = '';
-            menuData.forEach((item, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><input type="text" value="${item.category}" onchange="menuData[${index}].category=this.value;saveData()"></td>
-                        <td><input type="text" value="${item.name}" onchange="menuData[${index}].name=this.value;saveData()"></td>
-                        <td><input type="text" value="${item.price}" onchange="menuData[${index}].price=this.value;saveData()"></td>
-                        <td><input type="text" value="${item.badge||''}" onchange="menuData[${index}].badge=this.value;saveData()"></td>
-                        <td>
-                            <label class="file-upload-btn">
-                                <i class="fa-solid fa-image"></i> Seç
-                                <input type="file" accept="image/*" style="display:none;" onchange="handleLocalUpload(this.files[0], (url)=>{ menuData[${index}].img=url; saveData(); renderAdminTable(); })">
-                            </label>
-                        </td>
-                        <td><button class="btn btn-danger" onclick="menuData.splice(${index},1);saveData();renderAdminTable();">&times;</button></td>
-                    </tr>`;
+        function switchAdminTab(tabId) {
+            document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        /* ADMIN - POPUP SLIDER DÜZENLEME */
+        function renderAdminPromos() {
+            const list = document.getElementById('adminPromoList');
+            list.innerHTML = '';
+            promoList.forEach((promo, index) => {
+                list.innerHTML += `
+                    <div style="background:rgba(0,0,0,0.1); border:1px solid var(--border-color); padding:12px; border-radius:8px; margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <strong style="color:var(--accent-gold);">Kampanya Kartı #${index + 1}</strong>
+                            <button class="btn btn-danger" style="padding:4px 8px;" onclick="promoList.splice(${index},1);saveData();renderAdminPromos();">&times; Sil</button>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" class="form-group">
+                            <input type="text" value="${promo.badge}" placeholder="Rozet" onchange="promoList[${index}].badge=this.value;saveData()">
+                            <input type="text" value="${promo.title}" placeholder="Başlık" onchange="promoList[${index}].title=this.value;saveData()">
+                        </div>
+                        <div class="form-group">
+                            <textarea rows="2" placeholder="Açıklama" onchange="promoList[${index}].desc=this.value;saveData()">${promo.desc}</textarea>
+                        </div>
+                        <label class="file-upload-btn">
+                            <i class="fa-solid fa-image"></i> Görsel Seç
+                            <input type="file" accept="image/*" style="display:none;" onchange="handleLocalUpload(this.files[0], (url)=>{ promoList[${index}].img=url; saveData(); renderAdminPromos(); })">
+                        </label>
+                    </div>`;
             });
         }
 
-        function addNewRow() {
-            menuData.push({ category: "Yeni Kategori", name: "Yeni Ürün", price: "0,00 ₺", badge: "", img: "" });
+        function addPromoCard() {
+            promoList.push({ badge: "YENİ KAMPANYA", title: "Başlık Girin", desc: "Açıklama girin.", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800" });
             saveData();
+            renderAdminPromos();
+        }
+
+        /* ADMIN - KATEGORİLİ ÜRÜN YÖNETİMİ & AKTİF/PASİF SLIDER */
+        function populateAdminCategoryDropdown() {
+            const select = document.getElementById('adminCategoryFilter');
+            const categories = [...new Set(menuData.map(item => item.category))];
+            select.innerHTML = '';
+            categories.forEach(cat => { select.innerHTML += `<option value="${cat}">${cat}</option>`; });
+            if(categories.length > 0) select.value = categories[0];
+        }
+
+        function renderAdminTable() {
+            const selectedCat = document.getElementById('adminCategoryFilter').value;
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '';
+
+            menuData.forEach((item, index) => {
+                if(item.category === selectedCat) {
+                    const isChecked = item.active !== false ? 'checked' : '';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="text-align:center;">
+                                <label class="switch">
+                                    <input type="checkbox" ${isChecked} onchange="toggleItemActive(${index}, this.checked)">
+                                    <span class="slider-toggle"></span>
+                                </label>
+                            </td>
+                            <td><input type="text" value="${item.category}" onchange="menuData[${index}].category=this.value;saveData();populateAdminCategoryDropdown()"></td>
+                            <td><input type="text" value="${item.name}" onchange="menuData[${index}].name=this.value;saveData()"></td>
+                            <td><input type="text" value="${item.desc||''}" placeholder="Malzemeler..." onchange="menuData[${index}].desc=this.value;saveData()"></td>
+                            <td><input type="text" value="${item.price}" onchange="menuData[${index}].price=this.value;saveData()"></td>
+                            <td><input type="text" value="${item.badge||''}" placeholder="Popüler" onchange="menuData[${index}].badge=this.value;saveData()"></td>
+                            <td>
+                                <input type="text" id="iconInput_${index}" value="${item.icons||''}" onchange="menuData[${index}].icons=this.value;saveData()">
+                                <div class="icon-selector-pills">
+                                    <span class="icon-pill" onclick="appendIcon(${index}, '👑')">👑 Şef</span>
+                                    <span class="icon-pill" onclick="appendIcon(${index}, '🌶️')">🌶️ Acı</span>
+                                    <span class="icon-pill" onclick="appendIcon(${index}, '🌱')">🌱 Vej</span>
+                                    <span class="icon-pill" onclick="appendIcon(${index}, '🌾')">🌾 Glutensiz</span>
+                                </div>
+                            </td>
+                            <td>
+                                <label class="file-upload-btn">
+                                    <i class="fa-solid fa-image"></i>
+                                    <input type="file" accept="image/*" style="display:none;" onchange="handleLocalUpload(this.files[0], (url)=>{ menuData[${index}].img=url; saveData(); renderAdminTable(); })">
+                                </label>
+                            </td>
+                            <td><button class="btn btn-danger" onclick="menuData.splice(${index},1);saveData();renderAdminTable();">&times;</button></td>
+                        </tr>`;
+                }
+            });
+        }
+
+        function toggleItemActive(index, status) {
+            menuData[index].active = status;
+            saveData();
+        }
+
+        function appendIcon(index, icon) {
+            const input = document.getElementById(`iconInput_${index}`);
+            if(!input.value.includes(icon)) {
+                input.value = input.value ? `${input.value},${icon}` : icon;
+                menuData[index].icons = input.value;
+                saveData();
+            }
+        }
+
+        function addNewRow() {
+            const currentSelectedCat = document.getElementById('adminCategoryFilter').value || "Yeni Kategori";
+            menuData.push({ category: currentSelectedCat, name: "Yeni Ürün", desc: "", price: "0,00 ₺", badge: "", icons: "", active: true, img: "" });
+            saveData();
+            populateAdminCategoryDropdown();
             renderAdminTable();
+        }
+
+        /* EXCEL YÜKLEME */
+        function handleExcelUpload(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet);
+
+                if(json.length > 0) {
+                    menuData = json.map(row => ({
+                        category: row.Kategori || "Genel",
+                        name: row.UrunAdi || "Ürün",
+                        desc: row.Aciklama || "",
+                        price: row.Fiyat || "0,00 ₺",
+                        badge: row.Rozet || "",
+                        icons: row.Ikonlar || "",
+                        active: row.Aktif !== undefined ? Boolean(row.Aktif) : true,
+                        img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500"
+                    }));
+                    saveData();
+                    populateAdminCategoryDropdown();
+                    renderAdminTable();
+                    alert("Excel başarıyla yüklendi!");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function downloadExcelTemplate() {
+            const templateData = [
+                { Kategori: "Sıcak İçecekler", UrunAdi: "Türk Kahvesi", Aciklama: "Lokum ve su ile", Fiyat: "175,00 ₺", Rozet: "Popüler", Ikonlar: "👑", Aktif: 1 },
+                { Kategori: "Izgaralar", UrunAdi: "Kuzu Pirzola", Aciklama: "Pilav ve garnitür ile", Fiyat: "850,00 ₺", Rozet: "Spesyal", Ikonlar: "👑,🌶️", Aktif: 1 }
+            ];
+            const ws = XLSX.utils.json_to_sheet(templateData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "MenuTemplate");
+            XLSX.writeFile(wb, "Pera_Teras_Menu_Sablon.xlsx");
+        }
+
+        /* İLETİŞİM AYARLARI */
+        function loadContactToAdmin() {
+            document.getElementById('cfgPhone').value = contactConfig.phone;
+            document.getElementById('cfgWhatsapp').value = contactConfig.whatsapp;
+            document.getElementById('cfgAddress').value = contactConfig.address;
+            document.getElementById('cfgDirections').value = contactConfig.directions;
+            document.getElementById('cfgMapLink').value = contactConfig.mapLink;
+        }
+
+        function saveContactConfig() {
+            contactConfig.phone = document.getElementById('cfgPhone').value;
+            contactConfig.whatsapp = document.getElementById('cfgWhatsapp').value;
+            contactConfig.address = document.getElementById('cfgAddress').value;
+            contactConfig.directions = document.getElementById('cfgDirections').value;
+            contactConfig.mapLink = document.getElementById('cfgMapLink').value;
+            saveData();
         }
 
         function resetToDefault() {
             menuData = [...defaultMenuData];
-            promoConfig = {...defaultPromo};
             saveData();
+            populateAdminCategoryDropdown();
             renderAdminTable();
         }
 
         setLanguage('tr');
+        updateContactUI();
         setTimeout(openPromoModal, 500);
     </script>
 </body>
