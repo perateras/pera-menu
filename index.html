@@ -1,814 +1,1734 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pera Teras - Digital Menu & Management</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- SheetJS for Excel Upload -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <style>
-        :root {
-            --bg-color: #080c14;
-            --card-bg: rgba(21, 32, 51, 0.75);
-            --card-border: rgba(226, 183, 20, 0.2);
-            --accent-gold: #e2b714;
-            --gold-gradient: linear-gradient(135deg, #f3d053 0%, #e2b714 50%, #9e7d0a 100%);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #1e2d42;
-            --danger: #ef4444;
-            --success: #22c55e;
-            --whatsapp-color: #25d366;
-            --header-bg: rgba(8, 12, 20, 0.85);
-            --sidebar-bg: #04070d;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pera Teras Restaurant - Menü & VIP Yönetim</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome İkonlar -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Marka Tipografisi: Fraunces (başlık) + Inter (gövde) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        /* Gündüz / Açık Tema Variables */
-        body.light-theme {
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --card-border: rgba(226, 183, 20, 0.4);
-            --accent-gold: #b8860b;
-            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --header-bg: rgba(255, 255, 255, 0.9);
-            --sidebar-bg: #ffffff;
-        }
+  <style>
+    :root {
+      /* Beylikdüzü sahilinde akşam denizi + fener/pirinç aksan paleti */
+      --bg-color: #0a1f2c;
+      --bg-color-deep: #061420;
+      --card-bg: #12293a;
+      --card-inner: #173245;
+      --text-color: #f3ede0;
+      --text-muted: #9db2bf;
+      --accent-color: #cd9a4b;
+      --accent-hover: #b9863a;
+      --accent-soft: rgba(205, 154, 75, 0.14);
+      --border-color: #234156;
+      --input-bg: #163041;
+      --font-display: 'Fraunces', 'Georgia', serif;
+      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+    }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
-        body.rtl { direction: rtl; text-align: right; }
-        
-        /* Layout Structure */
-        .sidebar { width: 290px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 0; z-index: 10; flex-shrink: 0; transition: background-color 0.3s; }
-        .brand-header { text-align: center; padding: 0 20px 15px 20px; border-bottom: 1px solid var(--border-color); }
-        .brand-header h1 { font-family: 'Cinzel', serif; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; letter-spacing: 2px; font-weight: 800; }
-        .brand-header p { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; letter-spacing: 1px; }
-        .lang-bar { display: flex; justify-content: center; gap: 6px; padding: 12px 10px; border-bottom: 1px solid var(--border-color); background: var(--bg-color); }
-        .lang-btn { background: rgba(0,0,0,0.03); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .lang-btn.active, .lang-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(226, 183, 20, 0.12); }
-        .nav-categories { flex: 1; overflow-y: auto; padding: 15px 10px; }
-        .nav-btn { width: 100%; background: transparent; border: none; color: var(--text-muted); padding: 12px 16px; text-align: left; font-size: 0.88rem; font-weight: 600; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 6px; white-space: nowrap; transition: 0.3s; }
-        .nav-btn.active, .nav-btn:hover { background: var(--gold-gradient); color: #000; font-weight: 700; }
+    body.light-mode {
+      --bg-color: #efe6d3;
+      --bg-color-deep: #e5d9bf;
+      --card-bg: #fbf8f1;
+      --card-inner: #f4eee1;
+      --text-color: #2b2013;
+      --text-muted: #7a6b52;
+      --accent-color: #a9722f;
+      --accent-hover: #8c5d24;
+      --accent-soft: rgba(169, 114, 47, 0.12);
+      --border-color: #ddd0b0;
+      --input-bg: #ffffff;
+    }
 
-        /* Main Content */
-        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; background: radial-gradient(circle at top right, rgba(226, 183, 20, 0.05), transparent 40%); }
-        .content-header { padding: 15px 20px; background: var(--header-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px; z-index: 5; }
-        .header-top-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .category-title { font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--accent-gold); font-weight: 700; }
-        
-        .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .search-box { position: relative; width: 100%; max-width: 280px; }
-        .search-box input { background: rgba(0,0,0,0.05); border: 1px solid var(--border-color); padding: 8px 12px 8px 36px; border-radius: 20px; color: var(--text-main); font-size: 0.85rem; width: 100%; }
-        .search-box input:focus { border-color: var(--accent-gold); outline: none; }
-        .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem; }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-body);
+      transition: background-color 0.3s, color 0.3s;
+      min-height: 100vh;
+    }
 
-        .theme-toggle-btn { background: rgba(0,0,0,0.05); border: 1px solid var(--border-color); color: var(--text-main); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
-        .theme-toggle-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+    h1, h2, h3, h4, h5, h6,
+    .modal-title, .brand-name {
+      font-family: var(--font-display);
+    }
 
-        .quick-actions-bar { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
-        .action-btn-pill { background: rgba(0,0,0,0.04); border: 1px solid var(--border-color); color: var(--text-main); padding: 7px 13px; border-radius: 20px; text-decoration: none; font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.3s; white-space: nowrap; }
-        .action-btn-pill:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
-        .action-btn-pill.btn-whatsapp { border-color: rgba(37, 211, 102, 0.4); color: var(--whatsapp-color); background: rgba(37, 211, 102, 0.05); }
+    /* Klavye erişilebilirliği: görünür odak halkası */
+    a:focus-visible, button:focus-visible, input:focus-visible,
+    select:focus-visible, textarea:focus-visible, .category-pill:focus-visible,
+    .lang-badge:focus-visible, .menu-card:focus-visible {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 2px;
+    }
 
-        /* Social & Review Banner Area */
-        .social-banner-strip { background: rgba(226, 183, 20, 0.08); border-bottom: 1px solid var(--card-border); padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.78rem; flex-wrap: wrap; }
-        .social-banner-text { color: var(--text-main); font-weight: 500; display: flex; align-items: center; gap: 8px; }
-        .social-banner-text i { color: #e1306c; font-size: 1rem; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
 
-        /* Menü Izgarası */
-        .menu-grid { flex: 1; padding: 20px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; align-content: start; }
-        .menu-item { background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid var(--card-border); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; position: relative; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .menu-item:hover { transform: translateY(-4px); border-color: var(--accent-gold); }
-        .badge-tag { position: absolute; top: 12px; left: 12px; background: var(--gold-gradient); color: #000; font-size: 0.68rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; z-index: 2; text-transform: uppercase; }
-        .item-img-container { width: 100%; height: 170px; background-color: rgba(0,0,0,0.1); overflow: hidden; }
-        .item-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .menu-item:hover .item-img { transform: scale(1.08); }
-        .item-body { padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
-        .item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
-        .item-name { font-size: 1.02rem; font-weight: 700; color: var(--text-main); }
-        .item-price { font-size: 1.1rem; font-weight: 800; color: var(--accent-gold); white-space: nowrap; }
-        .item-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; }
-        .item-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 8px; margin-top: auto; }
+    /* Bootstrap'in varsayılan sarı (warning) tonlarını marka aksanına (pirinç/altın) hizalıyoruz */
+    .text-warning { color: var(--accent-color) !important; }
+    .bg-warning { background-color: var(--accent-color) !important; }
+    .border-warning { border-color: var(--accent-color) !important; }
+    .btn-warning {
+      background-color: var(--accent-color) !important;
+      border-color: var(--accent-color) !important;
+      color: #201404 !important;
+    }
+    .btn-warning:hover {
+      background-color: var(--accent-hover) !important;
+      border-color: var(--accent-hover) !important;
+    }
+    .btn-outline-warning {
+      color: var(--accent-color) !important;
+      border-color: var(--accent-color) !important;
+    }
+    .btn-outline-warning:hover {
+      background-color: var(--accent-color) !important;
+      color: #201404 !important;
+    }
+    .modal-content.bg-dark {
+      background-color: var(--bg-color-deep) !important;
+      border-color: var(--border-color) !important;
+    }
+    .table-dark {
+      --bs-table-bg: var(--card-inner);
+      --bs-table-color: var(--text-color);
+    }
 
-        /* Modallar */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
-        .modal.active { display: flex; }
-        .promo-card-v2 { background: var(--card-bg); border: 1px solid var(--accent-gold); border-radius: 18px; width: 100%; max-width: 500px; overflow: hidden; position: relative; max-height: 90vh; display: flex; flex-direction: column; color: var(--text-main); }
-        .promo-close-btn { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; font-size: 1.1rem; }
-        
-        /* Slider Yapısı */
-        .slider-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex: 1; }
-        .slider-container::-webkit-scrollbar { display: none; }
-        .slide-item { min-width: 100%; scroll-snap-align: start; display: flex; flex-direction: column; }
-        .promo-banner { width: 100%; height: 220px; object-fit: cover; }
-        .promo-content { padding: 20px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .slider-dots { display: flex; justify-content: center; gap: 8px; padding: 12px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--border-color); }
-        .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-color); cursor: pointer; transition: 0.3s; }
-        .dot.active { background: var(--accent-gold); width: 22px; border-radius: 10px; }
+    /* İMZA ÖĞESİ: Deniz ufku çizgisini çağrıştıran dalga motifli ayraç */
+    .wave-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 12px auto 0;
+      width: 100%;
+      max-width: 280px;
+      opacity: 0.9;
+    }
+    .wave-divider::before, .wave-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-color));
+    }
+    .wave-divider::after { background: linear-gradient(90deg, var(--accent-color), transparent); }
+    .wave-divider svg { flex-shrink: 0; display: block; }
+    .wave-divider svg path { stroke: var(--accent-color); }
 
-        /* Admin Paneli & Sekmeler */
-        .modal-content-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; width: 100%; max-width: 980px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; color: var(--text-main); }
-        .modal-header-bar { padding: 15px 20px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .admin-nav-tabs { display: flex; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); overflow-x: auto; }
-        .admin-tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 12px 18px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
-        .admin-tab-btn.active { color: var(--accent-gold); border-bottom-color: var(--accent-gold); background: rgba(226, 183, 20, 0.05); }
-        .admin-tab-content { display: none; padding: 18px; overflow-y: auto; flex: 1; }
-        .admin-tab-content.active { display: block; }
+    /* Marka Başlığı */
+    .brand-header {
+      text-align: center;
+      padding: 30px 20px 24px;
+      background:
+        radial-gradient(ellipse at 50% -20%, var(--accent-soft), transparent 60%),
+        var(--bg-color-deep);
+      border-bottom: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+    .brand-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    .brand-name {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(2.1rem, 5.5vw, 3.2rem);
+      letter-spacing: 0.01em;
+      margin: 8px 0 4px;
+      color: var(--text-color);
+      line-height: 1.05;
+    }
+    .brand-name span {
+      color: var(--accent-color);
+      font-style: italic;
+      font-weight: 500;
+    }
+    .brand-tagline {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
+      margin: 12px 0 0;
+      font-style: italic;
+      font-family: var(--font-display);
+    }
+    .brand-meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.03em;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .brand-meta i { color: var(--accent-color); }
+    .top-bar {
+      background-color: rgba(8, 20, 34, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 1030;
+    }
+    body.light-mode .top-bar {
+      background-color: rgba(251, 248, 241, 0.95);
+    }
 
-        .login-box { max-width: 380px; margin: 0 auto; background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid var(--accent-gold); color: var(--text-main); }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
-        input, textarea, select { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 10px; border-radius: 6px; width: 100%; font-size: 0.85rem; font-family: inherit; }
-        .btn { padding: 8px 14px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; }
-        .btn-gold { background: var(--gold-gradient); color: #000; font-weight: 700; }
-        .btn-danger { background: var(--danger); color: #fff; }
-        .btn-success { background: var(--success); color: #fff; }
-        .file-upload-btn { background: rgba(0,0,0,0.1); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; border: 1px solid var(--border-color); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-        
-        .admin-table-wrapper { overflow-x: auto; max-height: 48vh; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 850px; }
-        th, td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-size: 0.82rem; vertical-align: middle; }
-        th { background: rgba(0,0,0,0.3); color: var(--accent-gold); position: sticky; top: 0; }
+    .lang-badge {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .lang-badge.active, .lang-badge:hover {
+      background: var(--accent-color);
+      color: #201404;
+      border-color: var(--accent-color);
+    }
 
-        .icon-selector-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
-        .icon-pill { background: rgba(0,0,0,0.05); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
-        .icon-pill:hover { border-color: var(--accent-gold); }
+    /* Search Header */
+    .search-header {
+      padding: 22px 24px;
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .search-input-wrap { position: relative; }
+    .search-input-wrap i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-input-wrap input {
+      padding-left: 42px !important;
+      border-radius: 999px;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+    }
+    .search-input-wrap input:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 0.2rem var(--accent-soft);
+      background-color: var(--input-bg);
+      color: var(--text-color);
+    }
+    .search-input-wrap input::placeholder { color: var(--text-muted); }
 
-        /* Switch Toggle (Aktif/Pasif) */
-        .switch { position: relative; display: inline-block; width: 42px; height: 22px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider-toggle { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 22px; }
-        .slider-toggle:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider-toggle { background-color: var(--success); }
-        input:checked + .slider-toggle:before { transform: translateX(20px); }
+    /* Butonlar */
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+      color: #201404 !important;
+      font-weight: 700;
+      border: none;
+      box-shadow: 0 4px 14px rgba(205, 154, 75, 0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-accent:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(205, 154, 75, 0.35);
+    }
 
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-color); padding: 10px 0; }
-            .brand-header h1 { font-size: 1.35rem; }
-            .nav-categories { display: flex; overflow-x: auto; padding: 8px 10px; gap: 8px; scrollbar-width: none; }
-            .nav-categories::-webkit-scrollbar { display: none; }
-            .nav-btn { width: auto; flex-shrink: 0; margin-bottom: 0; padding: 8px 14px; font-size: 0.82rem; }
-            .menu-grid { grid-template-columns: 1fr; padding: 12px; gap: 14px; }
-            .content-header { padding: 10px 12px; gap: 8px; }
-            .search-box { max-width: 100%; }
-            .social-banner-strip { font-size: 0.72rem; flex-direction: column; align-items: flex-start; }
-        }
-    </style>
+    .btn-action-outline {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-weight: 600;
+      height: 100%;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .btn-action-outline:hover {
+      background: var(--accent-soft);
+      color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    /* Menü Kartları */
+    .menu-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      height: 100%;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .menu-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 28px rgba(0,0,0,0.35);
+      border-color: var(--accent-color);
+    }
+    
+    .menu-card-img-wrapper {
+      position: relative;
+      overflow: hidden;
+      height: 180px;
+    }
+
+    .menu-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .menu-card:hover img {
+      transform: scale(1.1);
+    }
+
+    .menu-card-body {
+      padding: 16px;
+    }
+    .menu-card-body h6 {
+      font-family: var(--font-display);
+      font-size: 1.02rem;
+      font-weight: 600;
+    }
+    .menu-card-body .fw-bold.text-warning {
+      font-family: var(--font-display);
+    }
+
+    /* Kategori Tabları */
+    .category-pill {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .category-pill:hover {
+      border-color: var(--accent-color);
+    }
+    .category-pill.active {
+      background: var(--accent-color);
+      color: #201404;
+      border-color: var(--accent-color);
+    }
+
+    /* İLETİŞİM / SEÇENEK MODAL STİLİ (3 BÖLÜMLÜ DÜZENLENMİŞ) */
+    .choice-modal-content {
+      background-color: var(--card-bg);
+      border: 2px solid var(--accent-color);
+      border-radius: var(--radius-lg);
+      color: var(--text-color);
+    }
+    
+    .btn-choice-call {
+      background-color: var(--accent-color);
+      color: #201404;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 1.05rem;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-choice-call:hover {
+      background-color: var(--accent-hover);
+      color: #201404;
+    }
+
+    .btn-choice-whatsapp {
+      background-color: #198754;
+      color: #ffffff;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 1.05rem;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-choice-whatsapp:hover {
+      background-color: #146c43;
+      color: #ffffff;
+    }
+
+    .btn-choice-form {
+      background-color: var(--card-inner);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 1.05rem;
+      transition: all 0.2s;
+    }
+    .btn-choice-form:hover {
+      background-color: var(--card-inner);
+      color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    /* REZERVASYON FORMU MODALİ STİLLERİ */
+    .res-modal-content {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      border-radius: var(--radius-md);
+    }
+    .res-notice-box {
+      background-color: rgba(205, 154, 75, 0.12);
+      border-left: 4px solid var(--accent-color);
+      color: #f3f4f6;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+    }
+    .res-label {
+      color: #ffffff !important;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+    .res-label span.req {
+      color: #ef4444;
+      font-weight: bold;
+    }
+    .res-input {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border: 1px solid #cbd5e1 !important;
+      font-weight: 500;
+      padding: 10px 14px;
+      border-radius: 6px;
+    }
+    .res-input::placeholder {
+      color: #94a3b8 !important;
+    }
+    .res-input:focus {
+      border-color: var(--accent-color) !important;
+      box-shadow: 0 0 0 0.2rem var(--accent-soft) !important;
+    }
+
+    /* VIP Modal */
+    .admin-modal-content {
+      background-color: var(--bg-color-deep);
+      color: #fff;
+      border: 1px solid var(--accent-color);
+    }
+    .admin-cat-header {
+      background: var(--card-bg);
+      border-left: 4px solid var(--accent-color);
+      padding: 10px 15px;
+      margin-top: 20px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      color: var(--accent-color);
+      border-radius: 4px;
+    }
+
+    /* POP-UP STİLLERİ */
+    .promo-modal-dialog-vertical {
+      max-width: 360px;
+      margin: 1.75rem auto;
+    }
+    .promo-modal-dialog-horizontal {
+      max-width: 650px;
+      margin: 1.75rem auto;
+    }
+
+    .promo-modal-content {
+      background-color: var(--bg-color-deep);
+      border: 2px solid var(--accent-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+      color: #ffffff;
+      padding: 0;
+      position: relative;
+    }
+
+    .promo-carousel-container {
+      position: relative;
+      overflow: hidden;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .promo-carousel-container.vertical {
+      height: 480px;
+    }
+    .promo-carousel-container.horizontal {
+      height: 320px;
+    }
+
+    .promo-carousel-img {
+      position: absolute;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .promo-badge-btn {
+      background-color: #d99b00;
+      color: #000;
+      font-weight: 800;
+      border-radius: 30px;
+      padding: 8px 24px;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      box-shadow: 0 4px 15px rgba(217, 155, 0, 0.4);
+    }
+
+    .custom-close-btn {
+      position: absolute !important;
+      top: 12px !important;
+      right: 12px !important;
+      z-index: 99999 !important;
+      background: #dc3545 !important;
+      color: #ffffff !important;
+      border: 2px solid #ffffff !important;
+      border-radius: 50% !important;
+      width: 38px !important;
+      height: 38px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 1.2rem !important;
+      cursor: pointer !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.8) !important;
+    }
+
+    /* SÜRÜKLE BIRAK RESİM KIRPMA TUVALİ */
+    .crop-stage {
+      width: 100%;
+      height: 280px;
+      background: #050a14;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .crop-img-target {
+      position: absolute;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-drag: none;
+      max-width: none;
+    }
+    .crop-img-target:active {
+      cursor: grabbing;
+    }
+
+    .crop-overlay-frame {
+      position: absolute;
+      border: 2px dashed var(--accent-color);
+      box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.65);
+      pointer-events: none;
+      z-index: 10;
+    }
+    .crop-overlay-frame.vertical {
+      width: 160px;
+      height: 240px;
+    }
+    .crop-overlay-frame.horizontal {
+      width: 340px;
+      height: 190px;
+    }
+
+    .crop-overlay-label {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: rgba(245, 158, 11, 0.9);
+      color: #000;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Sidebar / Topbar -->
-    <div class="sidebar">
-        <div class="brand-header">
-            <h1>PERA TERAS</h1>
-            <p>LEZZET & TERAS KEYFİ</p>
+  <!-- Üst Bar -->
+  <div class="top-bar d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <span class="lang-badge active" data-lang="tr" onclick="setLanguage('tr', this)">TR</span>
+      <span class="lang-badge" data-lang="en" onclick="setLanguage('en', this)">EN</span>
+      <span class="lang-badge" data-lang="ar" onclick="setLanguage('ar', this)">AR</span>
+    </div>
+    <button class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold" onclick="openAdminPanel()">
+      <i class="fa-solid fa-lock me-1"></i> <span data-i18n="adminBtn">VIP Yönetim Paneli</span>
+    </button>
+  </div>
+
+  <!-- Marka Başlığı -->
+  <div class="brand-header">
+    <span class="brand-eyebrow" data-i18n="brandEyebrow">Beylikdüzü Sahili</span>
+    <h1 class="brand-name">Pera <span>Teras</span></h1>
+    <p class="brand-tagline" data-i18n="brandTagline">"Bu şehirde manzara çok… Ama keyfin adresi tek."</p>
+    <div class="wave-divider" aria-hidden="true">
+      <svg width="46" height="14" viewBox="0 0 46 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 7C4.5 2 7.5 2 11 7C14.5 12 17.5 12 21 7C24.5 2 27.5 2 31 7C34.5 12 37.5 12 41 7" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="brand-meta">
+      <i class="fa-solid fa-location-dot"></i> <span data-i18n="brandAddress">Denizyolu Caddesi No:19, Beylikdüzü</span>
+      <span class="mx-1">•</span>
+      <i class="fa-solid fa-water"></i> <span data-i18n="brandView">Deniz Manzaralı Teras</span>
+    </p>
+  </div>
+
+  <!-- Arama ve Hızlı Butonlar Barı -->
+  <div class="search-header">
+    <div class="container-fluid px-0">
+      <div class="row g-3 align-items-center mb-3">
+        <div class="col-md">
+          <div class="search-input-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="menuSearchInput" class="form-control py-2" data-i18n-placeholder="searchPlaceholder" placeholder="Menüde lezzetli yemek veya içecek arayın..." onkeyup="filterMenu()">
+          </div>
         </div>
-        <div class="lang-bar">
-            <button class="lang-btn active" onclick="setLanguage('tr')">🇹🇷 TR</button>
-            <button class="lang-btn" onclick="setLanguage('en')">🇬🇧 EN</button>
-            <button class="lang-btn" onclick="setLanguage('ar')">🇸🇦 AR</button>
-            <button class="lang-btn" onclick="setLanguage('ru')">🇷🇺 RU</button>
-            <button class="lang-btn" onclick="setLanguage('fr')">🇫🇷 FR</button>
+        <div class="col-auto">
+          <button class="btn btn-action-outline py-2 px-3" id="themeToggleBtn">
+            <i class="fa-solid fa-moon me-1" id="themeIcon"></i> <span id="themeText" data-i18n="nightMode">Gece Modu</span>
+          </button>
         </div>
-        <div class="nav-categories" id="navCategories"></div>
+      </div>
+
+      <!-- HIZLI BUTONLAR -->
+      <div class="row g-2">
+        <div class="col-12 col-md-3">
+          <button class="btn btn-accent w-100 py-2" onclick="openChoiceModal()">
+            <i class="fa-solid fa-utensils me-2"></i><span data-i18n="reserveBtn">Masa Rezervasyonu Yap</span>
+          </button>
+        </div>
+        <div class="col-12 col-md-3">
+          <a href="https://maps.google.com/?q=Pera+Teras+Meyhanesi+Denizyolu+Caddesi+No:19+Beylikdüzü" target="_blank" class="btn btn-action-outline w-100 py-2">
+            <i class="fa-solid fa-map-location-dot me-2 text-primary"></i> <span data-i18n="directionsBtn">Yol Tarifi</span>
+          </a>
+        </div>
+        <div class="col-12 col-md-3">
+          <a href="https://g.page/r/CYMQyf6bBsMHEBM/review" target="_blank" rel="noopener noreferrer" class="btn btn-action-outline w-100 py-2">
+            <i class="fa-solid fa-star me-2 text-warning"></i> <span data-i18n="reviewBtn">Bizi Değerlendirin</span>
+          </a>
+        </div>
+        <div class="col-12 col-md-3">
+          <a href="tel:05306261796" class="btn btn-action-outline w-100 py-2">
+            <i class="fa-solid fa-phone me-2 text-info"></i> 0530 626 17 96
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ana Menü İçeriği -->
+  <main class="container-fluid py-4 px-3 px-md-4">
+    <div class="d-flex gap-2 overflow-x-auto pb-3 mb-4">
+      <span class="category-pill active" onclick="selectCategory('all', this)"><i class="fa-solid fa-border-all"></i> <span data-i18n="catAll">Tüm Menü</span></span>
+      <span class="category-pill" onclick="selectCategory('ızgara', this)"><i class="fa-solid fa-fire-burner"></i> <span data-i18n="catGrill">Izgaralar & Tava</span></span>
+      <span class="category-pill" onclick="selectCategory('kahvalti', this)"><i class="fa-solid fa-mug-saucer"></i> <span data-i18n="catBreakfast">Serpme Kahvaltı</span></span>
+      <span class="category-pill" onclick="selectCategory('tatli', this)"><i class="fa-solid fa-cake-candles"></i> <span data-i18n="catDessert">Tatlılar</span></span>
+      <span class="category-pill" onclick="selectCategory('soguk', this)"><i class="fa-solid fa-glass-water"></i> <span data-i18n="catCold">Soğuk İçecekler</span></span>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="content-header">
-            <div class="header-top-row">
-                <h2 class="category-title" id="currentCategoryTitle">Menü</h2>
-                <div class="header-controls">
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="searchInput" placeholder="Menüde lezzet ara..." oninput="handleSearch()">
-                    </div>
-                    <button class="theme-toggle-btn" onclick="toggleTheme()" title="Açık/Koyu Tema"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
-                </div>
-            </div>
-            <div class="quick-actions-bar">
-                <button class="action-btn-pill" onclick="openPromoModal()"><i class="fa-solid fa-bullhorn" style="color:var(--accent-gold)"></i> <span>Pera Teras'ta Ne Var?</span></button>
-                <button class="action-btn-pill" onclick="openLocationModal()"><i class="fa-solid fa-location-dot" style="color:#ef4444"></i> <span>Yol Tarifi</span></button>
-                <a id="actionCallBtn" href="tel:05551234567" class="action-btn-pill"><i class="fa-solid fa-phone" style="color:#3b82f6"></i> <span>Ara</span></a>
-                <a id="actionWhatsappBtn" href="https://wa.me/905551234567" target="_blank" class="action-btn-pill btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span></a>
-                <button class="action-btn-pill btn-admin" onclick="openAdminLoginModal()"><i class="fa-solid fa-lock"></i> <span>Yönetim</span></button>
-            </div>
-        </div>
+    <!-- MENÜ KARTLARI -->
+    <div class="row g-3" id="menuGrid"></div>
+  </main>
 
-        <!-- Instagram & Google Yorum Şeridi -->
-        <div class="social-banner-strip">
-            <div class="social-banner-text">
-                <i class="fa-brands fa-instagram"></i>
-                <span>Teras manzaralı fotoğrafınızı <strong>@perateras</strong> etiketiyle paylaşın, hikayemize ekleyelim!</span>
-            </div>
-            <a id="googleReviewBtn" href="https://maps.google.com" target="_blank" class="action-btn-pill" style="padding:4px 10px; font-size:0.75rem; border-color:var(--accent-gold);">
-                <i class="fa-solid fa-star" style="color:#f59e0b;"></i> Google'da Değerlendirin
+  <!-- REZERVASYON SEÇENEKLERİ POPUP (3 SEÇENEKLİ EKRAN) -->
+  <div class="modal fade" id="choiceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" style="max-width: 420px;">
+      <div class="modal-content choice-modal-content p-2">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title text-warning fw-bold fs-5">
+            <i class="fa-solid fa-calendar-days me-2"></i><span data-i18n="reserveTitle">Masa Rezervasyonu</span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body text-center p-3">
+          <p class="text-light small mb-4 opacity-75" data-i18n="reserveDesc">
+            Hızlı rezervasyon ve masa ayırtma işlemleri için doğrudan telefon numaramızdan, WhatsApp üzerinden bize ulaşabilir veya rezervasyon formunu doldurabilirsiniz.
+          </p>
+
+          <div class="d-grid gap-2">
+            <!-- 1. HEMEN ARA -->
+            <a href="tel:05306261796" class="btn btn-choice-call d-flex align-items-center justify-content-center gap-2">
+              <i class="fa-solid fa-phone fs-5"></i> <span data-i18n="callNow">Hemen Ara (0530 626 17 96)</span>
             </a>
+
+            <!-- 2. WHATSAPP İLE YAZIN -->
+            <a href="https://wa.me/905306261796?text=Merhaba,%20masa%20rezervasyonu%20yaptırmak%20istiyorum." target="_blank" class="btn btn-choice-whatsapp d-flex align-items-center justify-content-center gap-2">
+              <i class="fa-brands fa-whatsapp fs-4"></i> <span data-i18n="writeWhatsapp">WhatsApp İle Yazın</span>
+            </a>
+
+            <!-- 3. REZERVASYON FORMU DOLDUR -->
+            <button class="btn btn-choice-form d-flex align-items-center justify-content-center gap-2" onclick="switchToFormModal()">
+              <i class="fa-solid fa-pen-to-square fs-5"></i> <span data-i18n="fillForm">Rezervasyon Formu Doldur</span>
+            </button>
+          </div>
+
         </div>
-
-        <div class="menu-grid" id="menuGrid"></div>
+      </div>
     </div>
+  </div>
 
-    <!-- Sürüklemeli (Slider) Pop-up Modalı -->
-    <div class="modal" id="promoModal">
-        <div class="promo-card-v2">
-            <div class="promo-close-btn" onclick="closePromoModal()">&times;</div>
-            <div class="slider-container" id="sliderContainer" onscroll="updateSliderDots()"></div>
-            <div class="slider-dots" id="sliderDots"></div>
+  <!-- MASA REZERVASYONU FORM MODALI (2. RESME TAM UYUMLU DETAYLI FORM) -->
+  <div class="modal fade" id="reservationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content res-modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title text-warning fw-bold fs-5">
+            <i class="fa-solid fa-utensils me-2"></i><span data-i18n="reserveFormTitle">Masa Rezervasyonu Formu</span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-    </div>
-
-    <!-- Yol Tarifi Modalı -->
-    <div class="modal" id="locationModal">
-        <div class="promo-card-v2" style="max-width:450px;">
-            <div class="promo-close-btn" onclick="closeLocationModal()">&times;</div>
-            <img id="locImg" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800" class="promo-banner" alt="Pera Teras Dış Görünüş">
-            <div class="promo-content" style="text-align:left; align-items:flex-start;">
-                <h3 style="color:var(--accent-gold); font-family:'Cinzel',serif; font-size:1.3rem; margin-bottom:8px;"><i class="fa-solid fa-map-pin"></i> Pera Teras Konum</h3>
-                <p style="font-size:0.85rem; color:var(--text-main); font-weight:600; margin-bottom:6px;" id="locAddress">Dereağzı Mah. Deniz Yolu Caddesi No:19 Gürpınar Beylikdüzü/İstanbul</p>
-                <div style="background:rgba(226, 183, 20, 0.1); border-left:3px solid var(--accent-gold); padding:8px 12px; border-radius:4px; font-size:0.8rem; color:var(--text-muted); margin-bottom:15px;" id="locDirections">
-                    📌 <strong>Tarif:</strong> Beylikdüzü Balık Hali Çaprazında kalıyoruz.
-                </div>
-                <a id="locMapLink" href="https://maps.google.com" target="_blank" class="btn btn-gold" style="width:100%; justify-content:center; text-decoration:none;"><i class="fa-solid fa-route"></i> Google Maps ile Yol Tarifi Al</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Ürün Detay Popup Modalı -->
-    <div class="modal" id="productDetailModal">
-        <div class="promo-card-v2" style="max-width:420px;">
-            <div class="promo-close-btn" onclick="closeProductDetailModal()">&times;</div>
-            <img id="detailImg" src="" class="promo-banner">
-            <div class="promo-content" style="text-align:left; align-items:flex-start;">
-                <div style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-bottom:8px;">
-                    <h3 id="detailName" style="color:var(--text-main); font-size:1.2rem;"></h3>
-                    <span id="detailPrice" style="color:var(--accent-gold); font-weight:800; font-size:1.2rem;"></span>
-                </div>
-                <p id="detailDesc" style="color:var(--text-muted); font-size:0.88rem; line-height:1.5; margin-bottom:15px;"></p>
-                <div id="detailAllergens" style="font-size:1.1rem;"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Yönetici Giriş Modal -->
-    <div class="modal" id="adminLoginModal">
-        <div class="login-box">
-            <h3 style="color:var(--accent-gold); text-align:center; margin-bottom:15px;"><i class="fa-solid fa-user-shield"></i> Yönetici Girişi</h3>
-            <div class="form-group">
-                <label>Kullanıcı Adı</label>
-                <input type="text" id="loginUser" placeholder="pera">
-            </div>
-            <div class="form-group">
-                <label>Şifre</label>
-                <input type="password" id="loginPass" placeholder="******">
-            </div>
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <button class="btn btn-gold" style="flex:1;" onclick="submitAdminLogin()">Giriş</button>
-                <button class="btn btn-danger" onclick="closeAdminLoginModal()">İptal</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- VIP Yönetim Paneli (Sekmeli) -->
-    <div class="modal" id="adminModal">
-        <div class="modal-content-box">
-            <div class="modal-header-bar">
-                <h3><i class="fa-solid fa-sliders"></i> VIP Yönetim Paneli</h3>
-                <button class="btn btn-danger" onclick="closeAdminModal()">&times;</button>
-            </div>
-            <div class="admin-nav-tabs">
-                <button class="admin-tab-btn active" onclick="switchAdminTab('tabPromos')"><i class="fa-solid fa-bullhorn"></i> Pop-up / Kampanyalar</button>
-                <button class="admin-tab-btn" onclick="switchAdminTab('tabProducts')"><i class="fa-solid fa-utensils"></i> Menü Ürünleri</button>
-                <button class="admin-tab-btn" onclick="switchAdminTab('tabExcel')"><i class="fa-solid fa-file-excel"></i> Toplu Excel Yükleme</button>
-                <button class="admin-tab-btn" onclick="switchAdminTab('tabContact')"><i class="fa-solid fa-gear"></i> İletişim & Konum</button>
-            </div>
-
-            <!-- TAB 1: Pop-up / Kampanya Yönetimi -->
-            <div class="admin-tab-content active" id="tabPromos">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h4 style="color:var(--accent-gold);"><i class="fa-solid fa-images"></i> Sürüklemeli Kampanya Kartları</h4>
-                    <button class="btn btn-success" onclick="addPromoCard()"><i class="fa-solid fa-plus"></i> Yeni Kart Ekle</button>
-                </div>
-                <div id="adminPromoList"></div>
-            </div>
-
-            <!-- TAB 2: Menü Ürün Yönetimi (Kategoriye Göre Filtreli & Aktif/Pasif Seçenekli) -->
-            <div class="admin-tab-content" id="tabProducts">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <label style="font-size:0.85rem; color:var(--accent-gold);">Kategori Seçin:</label>
-                        <select id="adminCategoryFilter" style="width:200px;" onchange="renderAdminTable()"></select>
-                    </div>
-                    <div style="display:flex; gap:8px;">
-                        <button class="btn btn-success" onclick="addNewRow()"><i class="fa-solid fa-plus"></i> Bu Kategoriye Ürün Ekle</button>
-                        <button class="btn btn-danger" onclick="resetToDefault()"><i class="fa-solid fa-rotate-left"></i> Sıfırla</button>
-                    </div>
-                </div>
-
-                <div class="admin-table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Durum (Menüde Göster)</th>
-                                <th>Kategori</th>
-                                <th>Ürün Adı</th>
-                                <th>Açıklama / İçerik</th>
-                                <th>Fiyat</th>
-                                <th>Rozet</th>
-                                <th>Alerjen / Özellik İkonu</th>
-                                <th>Resim</th>
-                                <th>Sil</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TAB 3: Excel İle Toplu Yükleme -->
-            <div class="admin-tab-content" id="tabExcel">
-                <div style="background:rgba(0,0,0,0.1); border:1px dashed var(--accent-gold); padding:25px; border-radius:12px; text-align:center;">
-                    <i class="fa-solid fa-file-excel" style="font-size:3rem; color:var(--success); margin-bottom:15px;"></i>
-                    <h4 style="color:var(--text-main); margin-bottom:8px;">Excel İle Toplu Ürün Yükleme</h4>
-                    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:20px;">Excel dosyanızdaki sütun başlıkları şu şekilde olmalıdır: <strong>Kategori, UrunAdi, Aciklama, Fiyat, Rozet, Ikonlar, Aktif</strong></p>
-                    <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;">
-                        <label class="btn btn-gold" style="cursor:pointer;">
-                            <i class="fa-solid fa-upload"></i> Excel Dosyası Seç (.xlsx)
-                            <input type="file" id="excelInput" accept=".xlsx, .xls" style="display:none;" onchange="handleExcelUpload(event)">
-                        </label>
-                        <button class="btn btn-success" onclick="downloadExcelTemplate()"><i class="fa-solid fa-download"></i> Örnek Şablon İndir</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 4: İletişim & Konum Ayarları -->
-            <div class="admin-tab-content" id="tabContact">
-                <div style="max-width:550px;">
-                    <div class="form-group">
-                        <label>Telefon Numarası (Arama İçin)</label>
-                        <input type="text" id="cfgPhone" onchange="saveContactConfig()">
-                    </div>
-                    <div class="form-group">
-                        <label>WhatsApp Numarası (Ülke koduyla Örn: 905551234567)</label>
-                        <input type="text" id="cfgWhatsapp" onchange="saveContactConfig()">
-                    </div>
-                    <div class="form-group">
-                        <label>Açık Adres Metni</label>
-                        <input type="text" id="cfgAddress" onchange="saveContactConfig()">
-                    </div>
-                    <div class="form-group">
-                        <label>Yol Tarifi İpucu / Notu</label>
-                        <input type="text" id="cfgDirections" onchange="saveContactConfig()">
-                    </div>
-                    <div class="form-group">
-                        <label>Google Maps / Yorum Linki</label>
-                        <input type="text" id="cfgMapLink" onchange="saveContactConfig()">
-                    </div>
-                    <div class="form-group">
-                        <label>Dış Mekan Fotoğrafı</label>
-                        <label class="file-upload-btn">
-                            <i class="fa-solid fa-image"></i> Görsel Değiştir
-                            <input type="file" accept="image/*" style="display:none;" onchange="handleLocalUpload(this.files[0], (url)=>{ contactConfig.img=url; saveContactConfig(); })">
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function handleLocalUpload(file, callback) {
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) { callback(e.target.result); };
-            reader.readAsDataURL(file);
-        }
-
-        const defaultMenuData = [
-            { category: "Sıcak İçecekler", name: "Türk Kahvesi", desc: "Özel kavrulmuş çekirdekler, çifte kavrulmuş lokum ve su ile servis edilir.", price: "175,00 ₺", badge: "Popüler", icons: "👑", active: true, img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500" },
-            { category: "Soğuk İçecekler", name: "Ev Yapımı Limonata", desc: "Taze sıkılmış Bodrum limonları, taze nane yaprakları ve buz ile.", price: "185,00 ₺", badge: "Taze", icons: "🌱", active: true, img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500" },
-            { category: "Izgaralar", name: "Karışık Pera Mangal", desc: "Kuzu pirzola, kasap köfte, tavuk külbastı, közlenmiş biber, domates ve pilav ile.", price: "1.250,00 ₺", badge: "Spesyal", icons: "👑,🌶️", active: true, img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500" }
-        ];
-
-        const defaultPromos = [
-            { badge: "PERA TERAS'TA NELER VAR?", title: "EŞSİZ TERAS KEYFİ", desc: "Manzaranın ve lezzetin buluştuğu nokta Pera Teras'a hoş geldiniz!", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800" },
-            { badge: "ÖZEL KAMPANYA", title: "RAKINI KAP GEL!", desc: "Fiks menü lezzetlerimiz ve canlı müzik eşliğinde kendi içeceğinizle teras keyfi yapın.", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800" },
-            { badge: "HAFTA SONU ÖZEL", title: "SERPME TERAS KAHVALTISI", desc: "Pazar günleri muhteşem manzara eşliğinde yöresel lezzetlerle dolu serpme kahvaltı.", img: "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800" },
-            { badge: "BU HAFTAYA ÖZEL", title: "ÇARŞAMBA & CUMA CANLI MÜZİK", desc: "Bu haftaya özel sürpriz ikramlar ve canlı müzik performanslarını kaçırmayın!", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800" }
-        ];
-
-        const defaultContact = {
-            phone: "05551234567",
-            whatsapp: "905551234567",
-            address: "Dereağzı Mah. Deniz Yolu Caddesi No:19 Gürpınar Beylikdüzü/İstanbul",
-            directions: "📌 Tarif: Beylikdüzü Balık Hali Çaprazında kalıyoruz.",
-            mapLink: "https://maps.google.com",
-            img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800"
-        };
-
-        let menuData = JSON.parse(localStorage.getItem('pera_menu_v12')) || defaultMenuData;
-        let promoList = JSON.parse(localStorage.getItem('pera_promos_v12')) || defaultPromos;
-        let contactConfig = JSON.parse(localStorage.getItem('pera_contact_v12')) || defaultContact;
         
-        let currentLang = 'tr';
-        let currentCategory = '';
-        let translationCache = {};
+        <div class="modal-body p-4">
+          <!-- ÖNEMLİ NOT UYARISI -->
+          <div class="res-notice-box mb-3">
+            <span class="fw-bold text-warning"><i class="fa-solid fa-circle-exclamation me-1"></i> <span data-i18n="importantNote">Önemli Not:</span></span>
+            <span data-i18n="reserveNoticeText">Rezervasyonunuz belirtilen saatten itibaren <u class="fw-bold">30 dakika geçerlidir</u>. Süre aşıldığında ve haber verilmediğinde masanız başka müşterilerimize devredilebilir.</span>
+          </div>
 
-        function saveData() { 
-            localStorage.setItem('pera_menu_v12', JSON.stringify(menuData));
-            localStorage.setItem('pera_promos_v12', JSON.stringify(promoList));
-            localStorage.setItem('pera_contact_v12', JSON.stringify(contactConfig));
-        }
+          <!-- REZERVASYON FORMU -->
+          <form id="resForm" onsubmit="sendReservationToWhatsApp(event)">
+            <div class="mb-3">
+              <label class="res-label" data-i18n="fullName">Ad Soyad <span class="req">*</span></label>
+              <input type="text" id="resName" class="form-control res-input" placeholder="Örn: Ahmet Yılmaz" required>
+            </div>
 
-        /* GÜNDÜZ / GECE TEMA DEĞİŞTİRME */
-        function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            const icon = document.getElementById('themeIcon');
-            if(document.body.classList.contains('light-theme')) {
-                icon.className = 'fa-solid fa-sun';
-            } else {
-                icon.className = 'fa-solid fa-moon';
-            }
-        }
+            <div class="mb-3">
+              <label class="res-label" data-i18n="phoneNumber">Telefon Numarası <span class="req">*</span></label>
+              <input type="tel" id="resPhone" class="form-control res-input" placeholder="05XX XXX XX XX" required pattern="[0-9 +]{10,15}" title="Geçerli bir telefon numarası giriniz">
+            </div>
 
-        async function translateText(text, targetLang) {
-            if (!text || targetLang === 'tr') return text;
-            const key = `${text}_${targetLang}`;
-            if (translationCache[key]) return translationCache[key];
+            <div class="mb-3">
+              <label class="res-label" data-i18n="guestCount">Kişi Sayısı <span class="req">*</span></label>
+              <select id="resGuests" class="form-select res-input" required>
+                <option value="" disabled selected>Seçiniz...</option>
+                <option value="1 Kişi">1 Kişi</option>
+                <option value="2 Kişi">2 Kişi</option>
+                <option value="3 Kişi">3 Kişi</option>
+                <option value="4 Kişi">4 Kişi</option>
+                <option value="5-8 Kişi">5-8 Kişi (Grup)</option>
+                <option value="9+ Kalabalık Grup">9+ Kalabalık Grup</option>
+              </select>
+            </div>
 
-            try {
-                const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=tr&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
-                const data = await res.json();
-                const translated = data[0].map(item => item[0]).join('');
-                translationCache[key] = translated;
-                return translated;
-            } catch (err) { return text; }
-        }
-
-        /* POP-UP SLIDER SİSTEMİ */
-        function openPromoModal() {
-            const container = document.getElementById('sliderContainer');
-            const dots = document.getElementById('sliderDots');
-            container.innerHTML = '';
-            dots.innerHTML = '';
-
-            promoList.forEach((promo, idx) => {
-                container.innerHTML += `
-                    <div class="slide-item">
-                        <img src="${promo.img}" class="promo-banner">
-                        <div class="promo-content">
-                            <div class="promo-badge-pill" style="background:var(--gold-gradient); color:#000; font-weight:800; font-size:0.75rem; padding:6px 16px; border-radius:20px; text-transform:uppercase; margin-bottom:10px;"><i class="fa-solid fa-fire"></i> ${promo.badge}</div>
-                            <h3 class="promo-heading" style="font-family:'Cinzel',serif; font-size:1.3rem; color:var(--text-main); margin-bottom:8px;">${promo.title}</h3>
-                            <p class="promo-text" style="color:var(--text-muted); font-size:0.85rem; line-height:1.4;">${promo.desc}</p>
-                        </div>
-                    </div>`;
-                dots.innerHTML += `<div class="dot ${idx === 0 ? 'active' : ''}" onclick="scrollToSlide(${idx})"></div>`;
-            });
-
-            document.getElementById('promoModal').classList.add('active');
-        }
-
-        function closePromoModal() { document.getElementById('promoModal').classList.remove('active'); }
-
-        function scrollToSlide(idx) {
-            const container = document.getElementById('sliderContainer');
-            container.scrollTo({ left: container.clientWidth * idx, behavior: 'smooth' });
-        }
-
-        function updateSliderDots() {
-            const container = document.getElementById('sliderContainer');
-            const slideIdx = Math.round(container.scrollLeft / container.clientWidth);
-            document.querySelectorAll('.dot').forEach((dot, idx) => {
-                dot.classList.toggle('active', idx === slideIdx);
-            });
-        }
-
-        /* YOL TARİFİ MODALI & İLETİŞİM */
-        function openLocationModal() {
-            document.getElementById('locImg').src = contactConfig.img;
-            document.getElementById('locAddress').textContent = contactConfig.address;
-            document.getElementById('locDirections').innerHTML = contactConfig.directions;
-            document.getElementById('locMapLink').href = contactConfig.mapLink;
-            document.getElementById('locationModal').classList.add('active');
-        }
-        function closeLocationModal() { document.getElementById('locationModal').classList.remove('active'); }
-
-        function updateContactUI() {
-            document.getElementById('actionCallBtn').href = `tel:${contactConfig.phone}`;
-            document.getElementById('actionWhatsappBtn').href = `https://wa.me/${contactConfig.whatsapp}`;
-            document.getElementById('googleReviewBtn').href = contactConfig.mapLink;
-        }
-
-        async function setLanguage(lang) {
-            currentLang = lang;
-            document.body.classList.toggle('rtl', lang === 'ar');
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.innerText.toLowerCase().includes(lang));
-            });
-            await renderCategories();
-        }
-
-        async function renderCategories() {
-            const categories = [...new Set(menuData.map(item => item.category))];
-            const nav = document.getElementById('navCategories');
-            nav.innerHTML = '';
-
-            for (let index = 0; index < categories.length; index++) {
-                const cat = categories[index];
-                const translatedCat = await translateText(cat, currentLang);
-                
-                const btn = document.createElement('button');
-                btn.className = `nav-btn ${index === 0 ? 'active' : ''}`;
-                btn.innerHTML = `<i class="fa-solid fa-utensils"></i> ${translatedCat}`;
-                btn.onclick = () => selectCategory(cat, translatedCat, btn);
-                nav.appendChild(btn);
-            }
-
-            if (categories.length > 0) {
-                const firstTransCat = await translateText(categories[0], currentLang);
-                selectCategory(categories[0], firstTransCat, nav.children[0]);
-            }
-        }
-
-        async function selectCategory(rawCat, displayCat, btn) {
-            currentCategory = rawCat;
-            document.getElementById('searchInput').value = '';
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-            document.getElementById('currentCategoryTitle').textContent = displayCat;
-
-            // Sadece Aktif (active !== false) Olan Ürünleri Filtrele
-            const filtered = menuData.filter(i => i.category === rawCat && i.active !== false);
-            await renderGridItems(filtered);
-        }
-
-        async function handleSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            if(!query) {
-                const filtered = menuData.filter(i => i.category === currentCategory && i.active !== false);
-                await renderGridItems(filtered);
-                return;
-            }
-            const filtered = menuData.filter(i => (i.active !== false) && (i.name.toLowerCase().includes(query) || (i.desc && i.desc.toLowerCase().includes(query))));
-            await renderGridItems(filtered);
-        }
-
-        async function renderGridItems(items) {
-            const grid = document.getElementById('menuGrid');
-            if(items.length === 0) {
-                grid.innerHTML = '<div style="color:var(--text-muted); padding:20px;">Bu kategoride aktif ürün bulunmamaktadır.</div>';
-                return;
-            }
-            grid.innerHTML = '<div style="color:var(--accent-gold); padding:20px;">Yükleniyor...</div>';
-
-            let htmlContent = '';
-            for (const item of items) {
-                const realIndex = menuData.indexOf(item);
-                const transName = await translateText(item.name, currentLang);
-                const transDesc = item.desc ? await translateText(item.desc, currentLang) : '';
-                const transBadge = item.badge ? await translateText(item.badge, currentLang) : '';
-
-                htmlContent += `
-                    <div class="menu-item" onclick="openProductDetail(${realIndex})">
-                        ${transBadge ? `<div class="badge-tag">${transBadge}</div>` : ''}
-                        <div class="item-img-container"><img src="${item.img}" class="item-img"></div>
-                        <div class="item-body">
-                            <div>
-                                <div class="item-header">
-                                    <div class="item-name">${transName}</div>
-                                    <div class="item-price">${item.price}</div>
-                                </div>
-                                ${transDesc ? `<div class="item-desc">${transDesc}</div>` : ''}
-                            </div>
-                            <div class="item-footer">
-                                <span style="font-size:1.1rem;">${item.icons || ''}</span>
-                                <span style="font-size:0.75rem; color:var(--accent-gold); font-weight:600;">İncele <i class="fa-solid fa-chevron-right"></i></span>
-                            </div>
-                        </div>
-                    </div>`;
-            }
-            grid.innerHTML = htmlContent;
-        }
-
-        async function openProductDetail(index) {
-            const item = menuData[index];
-            document.getElementById('detailImg').src = item.img;
-            document.getElementById('detailName').textContent = await translateText(item.name, currentLang);
-            document.getElementById('detailPrice').textContent = item.price;
-            document.getElementById('detailDesc').textContent = await translateText(item.desc || '', currentLang);
-            document.getElementById('detailAllergens').textContent = item.icons || '';
-            document.getElementById('productDetailModal').classList.add('active');
-        }
-
-        function closeProductDetailModal() { document.getElementById('productDetailModal').classList.remove('active'); }
-
-        /* YÖNETİM PANELİ (ADMIN) */
-        function openAdminLoginModal() { document.getElementById('adminLoginModal').classList.add('active'); }
-        function closeAdminLoginModal() { document.getElementById('adminLoginModal').classList.remove('active'); }
-
-        function submitAdminLogin() {
-            if(document.getElementById('loginUser').value === "pera" && document.getElementById('loginPass').value === "Aytac.123456") {
-                closeAdminLoginModal();
-                populateAdminCategoryDropdown();
-                renderAdminTable();
-                renderAdminPromos();
-                loadContactToAdmin();
-                document.getElementById('adminModal').classList.add('active');
-            } else { alert("Hatalı Giriş!"); }
-        }
-
-        function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); renderCategories(); updateContactUI(); }
-
-        function switchAdminTab(tabId) {
-            document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+            <div class="row g-2 mb-1">
+              <div class="col-6">
+                <label class="res-label" data-i18n="dateLabel">Tarih <span class="req">*</span></label>
+                <input type="date" id="resDate" class="form-control res-input" onchange="handleDateChange(this.value)" required>
+              </div>
+              <div class="col-6">
+                <label class="res-label">Saat <span class="req">*</span></label>
+                <select id="resTime" class="form-select res-input" required disabled>
+                  <option value="" disabled selected>Önce Tarih Seçiniz</option>
+                </select>
+              </div>
+            </div>
             
-            event.currentTarget.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            <div class="mb-3">
+              <small class="text-muted" style="font-size: 0.78rem;">
+                * Hafta içi/Cumartesi: 16:00 - 02:00 | Pazar Kahvaltı: 10:00 - 14:30
+              </small>
+            </div>
+
+            <div class="mb-3">
+              <label class="res-label">Özel Etkinlik <span class="text-muted fw-normal fs-7">(İsteğe Bağlı)</span></label>
+              <select id="resEvent" class="form-select res-input">
+                <option value="Yok / Standart Rezervasyon" selected>Yok / Standart Rezervasyon</option>
+                <option value="Doğum Günü Kutlaması">Doğum Günü Kutlaması</option>
+                <option value="Evlilik Yıldönümü">Evlilik Yıldönümü</option>
+                <option value="Evlilik Teklifi">Evlilik Teklifi</option>
+                <option value="İş Yemeği / Toplantı">İş Yemeği / Toplantı</option>
+                <option value="Aile Yemeği">Aile Yemeği</option>
+              </select>
+            </div>
+
+            <div class="mb-4">
+              <label class="res-label">Özel Not / İstek <span class="text-muted fw-normal fs-7">(İsteğe Bağlı)</span></label>
+              <textarea id="resNote" class="form-control res-input" rows="2" placeholder="Varsa alerjen, bebek sandalyesi vb. talebinizi yazabilirsiniz."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 fw-bold py-2 fs-6">
+              <i class="fa-brands fa-whatsapp me-2 fs-5"></i> Rezervasyonu WhatsApp ile Gönder
+            </button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- YEMEK DETAY MODALI -->
+  <div class="modal fade" id="productDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-light border-warning">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title text-warning" id="modalProductTitle">Ürün Detayı</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center p-0">
+          <img id="modalProductImg" src="" class="img-fluid w-100" style="max-height: 350px; object-fit: cover;">
+          <div class="p-3 text-start">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge bg-warning text-dark fs-6" id="modalProductBadge"></span>
+              <span class="fs-4 fw-bold text-warning" id="modalProductPrice"></span>
+            </div>
+            <p class="text-light mb-0" id="modalProductDesc"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POP-UP MODAL -->
+  <div class="modal fade" id="promoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" id="promoDialog">
+      <div class="modal-content promo-modal-content">
+        <button type="button" class="custom-close-btn" data-bs-dismiss="modal" aria-label="Kapat">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div id="popupCarousel" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner" id="popupCarouselInner"></div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#popupCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#popupCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+          </button>
+        </div>
+
+        <div class="p-3 text-center bg-dark">
+          <button class="promo-badge-btn" data-bs-dismiss="modal">
+            <i class="fa-solid fa-fire"></i> PERA TERAS'TA NELER VAR?
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIP ŞİFRE MODALI -->
+  <div class="modal fade" id="passwordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content bg-dark text-light border-warning">
+        <div class="modal-header border-secondary">
+          <h6 class="modal-title text-warning"><i class="fa-solid fa-shield-halved me-2"></i>VIP Yönetici Girişi</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label small">Yönetici Şifrenizi Giriniz:</label>
+          <input type="password" id="adminPasswordInput" class="form-control mb-2" placeholder="Şifre Giriniz" onkeyup="if(event.key === 'Enter') verifyAdminPassword()">
+          <div id="adminPasswordError" class="form-text text-danger mb-2 small" style="display:none;"><i class="fa-solid fa-triangle-exclamation me-1"></i>Hatalı şifre, tekrar deneyin.</div>
+          <button class="btn btn-warning w-100 fw-bold" onclick="verifyAdminPassword()">Giriş Yap</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIP YÖNETİM PANELİ -->
+  <div class="modal fade" id="adminModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content admin-modal-content">
+        <div class="modal-header bg-dark border-bottom border-secondary">
+          <h5 class="modal-title text-warning"><i class="fa-solid fa-sliders me-2"></i>VIP Yönetim Paneli</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          
+          <ul class="nav nav-tabs border-secondary mb-4" id="vipTab">
+            <li class="nav-item">
+              <button class="nav-link text-light fw-bold" id="products-tab" data-bs-toggle="tab" data-bs-target="#products-pane">
+                <i class="fa-solid fa-utensils me-1"></i> Menü Ürün Yönetimi
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link active bg-warning text-dark fw-bold" id="popup-tab" data-bs-toggle="tab" data-bs-target="#popup-pane">
+                <i class="fa-solid fa-crop-simple me-1"></i> Pop-Up Görsel Kırpma & Format Yönetimi
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <!-- Pop-up Slayt Yönetimi -->
+            <div class="tab-pane fade show active" id="popup-pane">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="text-warning mb-0">Çizili Alan İçerisinde Görsel Hizalama Tuvali</h6>
+                <button class="btn btn-warning btn-sm fw-bold" onclick="addPromoSlide()">
+                  <i class="fa-solid fa-plus me-1"></i> Yeni Pop-Up Slayt Ekle
+                </button>
+              </div>
+
+              <div id="promoSlideList" class="row g-3"></div>
+
+              <button class="btn btn-success mt-4 fw-bold px-4" onclick="savePromoSettings()">
+                <i class="fa-solid fa-save me-1"></i> Değişiklikleri Kaydet & Önizle
+              </button>
+            </div>
+
+            <!-- MENÜ YÖNETİMİ -->
+            <div class="tab-pane fade" id="products-pane">
+              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h6 class="text-warning mb-0">Kategorilere Göre Menü Listesi</h6>
+                <div class="d-flex gap-2">
+                  <input type="text" id="adminProductSearch" class="form-control form-control-sm" style="min-width: 220px;" placeholder="Ürün adına göre ara..." onkeyup="renderCategorizedAdminProducts()">
+                  <button class="btn btn-warning btn-sm fw-bold text-nowrap" onclick="addNewProductRow()">
+                    <i class="fa-solid fa-plus me-1"></i> Yeni Ürün Ekle
+                  </button>
+                </div>
+              </div>
+              
+              <div id="adminCategorizedProducts"></div>
+
+              <button class="btn btn-success mt-4 fw-bold px-4" onclick="saveAdminProducts()">
+                <i class="fa-solid fa-floppy-disk me-1"></i> Tüm Menü Değişikliklerini Kaydet
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // VARSAYILAN SLAYTLAR
+    const defaultSlides = [
+      { id: 1, title: 'EŞSİZ TERAS KEYFİ', desc: 'Manzaranın ve lezzetin buluştuğu nokta Pera Teras.', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop', format: 'vertical', x: 0, y: 0, width: 350 },
+      { id: 2, title: 'ÖZEL IZGARALAR', desc: 'Ateşte pişen taze kuzu pirzola ve lezzetler.', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop', format: 'horizontal', x: 0, y: 0, width: 450 }
+    ];
+
+    const defaultProducts = [
+      { id: 1, active: true, category: 'ızgara', categoryName: 'Izgaralar & Tava', name: 'Kuzu Pirzola', price: '480,00 ₺', badge: 'Şefin Seçimi', badgeColor: 'bg-warning text-dark', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop', desc: 'Özel baharatlarla marine edilmiş, ızgarada pişen taze kuzu pirzola.' },
+      { id: 2, active: true, category: 'kahvalti', categoryName: 'Serpme Kahvaltı', name: 'Serpme Kahvaltı', price: '350,00 ₺', badge: 'Pazar Özel', badgeColor: 'bg-info text-dark', img: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=500&auto=format&fit=crop', desc: 'Zengin peynir tabağı, sahanda yumurta, börek çeşitleri ve sınırsız çay.' },
+      { id: 3, active: true, category: 'soguk', categoryName: 'Soğuk İçecekler', name: 'Ev Yapımı Limonata', price: '185,00 ₺', badge: 'Taze', badgeColor: 'bg-success', img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500&auto=format&fit=crop', desc: 'Taze sıkılmış limon, taze nane yaprakları ve buz ile servis edilir.' },
+      { id: 4, active: true, category: 'tatli', categoryName: 'Tatlılar', name: 'San Sebastian Cheesecake', price: '220,00 ₺', badge: 'Popüler', badgeColor: 'bg-danger', img: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=500&auto=format&fit=crop', desc: 'İspanyol usulü akışkan San Sebastian, eritilmiş sıcak Belçika çikolatası ile.' }
+    ];
+
+    let promoSlides = [];
+    let products = [];
+
+    try {
+      promoSlides = JSON.parse(localStorage.getItem('pera_promo_slides')) || defaultSlides;
+      products = JSON.parse(localStorage.getItem('pera_products')) || defaultProducts;
+    } catch(e) {
+      promoSlides = defaultSlides;
+      products = defaultProducts;
+    }
+
+    // ÇOKLU DİL (TR / EN / AR) DESTEĞİ
+    const translations = {
+      tr: {
+        adminBtn: 'VIP Yönetim Paneli',
+        searchPlaceholder: 'Menüde lezzetli yemek veya içecek arayın...',
+        nightMode: 'Gece Modu',
+        dayMode: 'Gündüz Modu',
+        reserveBtn: 'Masa Rezervasyonu Yap',
+        directionsBtn: 'Yol Tarifi',
+        reviewBtn: 'Bizi Değerlendirin',
+        brandEyebrow: 'Beylikdüzü Sahili',
+        brandTagline: '"Bu şehirde manzara çok… Ama keyfin adresi tek."',
+        brandAddress: 'Denizyolu Caddesi No:19, Beylikdüzü',
+        brandView: 'Deniz Manzaralı Teras',
+        catAll: 'Tüm Menü',
+        catGrill: 'Izgaralar & Tava',
+        catBreakfast: 'Serpme Kahvaltı',
+        catDessert: 'Tatlılar',
+        catCold: 'Soğuk İçecekler',
+        reserveTitle: 'Masa Rezervasyonu',
+        reserveDesc: 'Hızlı rezervasyon ve masa ayırtma işlemleri için doğrudan telefon numaramızdan, WhatsApp üzerinden bize ulaşabilir veya rezervasyon formunu doldurabilirsiniz.',
+        callNow: 'Hemen Ara (0530 626 17 96)',
+        writeWhatsapp: 'WhatsApp İle Yazın',
+        fillForm: 'Rezervasyon Formu Doldur',
+        reserveFormTitle: 'Masa Rezervasyonu Formu',
+        importantNote: 'Önemli Not:',
+        reserveNoticeText: 'Rezervasyonunuz belirtilen saatten itibaren <u class="fw-bold">30 dakika geçerlidir</u>. Süre aşıldığında ve haber verilmediğinde masanız başka müşterilerimize devredilebilir.',
+        fullName: 'Ad Soyad <span class="req">*</span>',
+        phoneNumber: 'Telefon Numarası <span class="req">*</span>',
+        guestCount: 'Kişi Sayısı <span class="req">*</span>',
+        dateLabel: 'Tarih <span class="req">*</span>'
+      },
+      en: {
+        adminBtn: 'VIP Admin Panel',
+        searchPlaceholder: 'Search for delicious food or drinks...',
+        nightMode: 'Night Mode',
+        dayMode: 'Day Mode',
+        reserveBtn: 'Book a Table',
+        directionsBtn: 'Directions',
+        reviewBtn: 'Leave a Review',
+        brandEyebrow: 'Beylikdüzü Seafront',
+        brandTagline: '"This city has plenty of views… but only one address for a good time."',
+        brandAddress: 'Denizyolu Street No:19, Beylikdüzü',
+        brandView: 'Sea-View Terrace',
+        catAll: 'Full Menu',
+        catGrill: 'Grill & Pan',
+        catBreakfast: 'Breakfast Spread',
+        catDessert: 'Desserts',
+        catCold: 'Cold Drinks',
+        reserveTitle: 'Table Reservation',
+        reserveDesc: 'For quick reservations, you can call us directly, message us on WhatsApp, or fill out the reservation form.',
+        callNow: 'Call Now (0530 626 17 96)',
+        writeWhatsapp: 'Message on WhatsApp',
+        fillForm: 'Fill Reservation Form',
+        reserveFormTitle: 'Table Reservation Form',
+        importantNote: 'Important Note:',
+        reserveNoticeText: 'Your reservation is <u class="fw-bold">valid for 30 minutes</u> from the specified time. If you exceed this without notice, your table may be given to other guests.',
+        fullName: 'Full Name <span class="req">*</span>',
+        phoneNumber: 'Phone Number <span class="req">*</span>',
+        guestCount: 'Number of Guests <span class="req">*</span>',
+        dateLabel: 'Date <span class="req">*</span>'
+      },
+      ar: {
+        adminBtn: 'لوحة تحكم VIP',
+        searchPlaceholder: 'ابحث عن طعام أو مشروب لذيذ في القائمة...',
+        nightMode: 'الوضع الليلي',
+        dayMode: 'وضع النهار',
+        reserveBtn: 'احجز طاولة',
+        directionsBtn: 'الاتجاهات',
+        reviewBtn: 'قيّمنا',
+        brandEyebrow: 'ساحل بيليكدوزو',
+        brandTagline: '"في هذه المدينة إطلالات كثيرة... لكن عنوان المتعة واحد فقط."',
+        brandAddress: 'شارع دنيز يولو رقم 19، بيليكدوزو',
+        brandView: 'تراس بإطلالة على البحر',
+        catAll: 'القائمة الكاملة',
+        catGrill: 'المشاوي والطاوة',
+        catBreakfast: 'إفطار مفتوح',
+        catDessert: 'الحلويات',
+        catCold: 'المشروبات الباردة',
+        reserveTitle: 'حجز طاولة',
+        reserveDesc: 'للحجز السريع، يمكنكم الاتصال بنا مباشرة أو مراسلتنا عبر واتساب أو تعبئة نموذج الحجز.',
+        callNow: 'اتصل الآن (0530 626 17 96)',
+        writeWhatsapp: 'راسلنا عبر واتساب',
+        fillForm: 'تعبئة نموذج الحجز',
+        reserveFormTitle: 'نموذج حجز الطاولة',
+        importantNote: 'ملاحظة هامة:',
+        reserveNoticeText: 'يبقى حجزكم <u class="fw-bold">صالحاً لمدة 30 دقيقة</u> من الموعد المحدد. في حال التأخر دون إشعار، قد تُمنح الطاولة لعملاء آخرين.',
+        fullName: 'الاسم الكامل <span class="req">*</span>',
+        phoneNumber: 'رقم الهاتف <span class="req">*</span>',
+        guestCount: 'عدد الأشخاص <span class="req">*</span>',
+        dateLabel: 'التاريخ <span class="req">*</span>'
+      }
+    };
+
+    let currentLang = localStorage.getItem('pera_lang') || 'tr';
+
+    function setLanguage(lang, element) {
+      currentLang = lang;
+      try { localStorage.setItem('pera_lang', lang); } catch(e) {}
+      document.querySelectorAll('.lang-badge').forEach(badge => badge.classList.remove('active'));
+      if(element) element.classList.add('active');
+      applyLanguage(lang);
+    }
+
+    function applyLanguage(lang) {
+      const dict = translations[lang] || translations.tr;
+      const isLight = document.body.classList.contains('light-mode');
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key] !== undefined) {
+          if (key === 'nightMode') {
+            el.innerHTML = isLight ? dict.dayMode : dict.nightMode;
+          } else {
+            el.innerHTML = dict[key];
+          }
+        }
+      });
+
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (dict[key] !== undefined) el.placeholder = dict[key];
+      });
+
+      document.body.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+      document.querySelectorAll('.lang-badge').forEach(badge => {
+        badge.classList.toggle('active', badge.getAttribute('data-lang') === lang);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      renderMenuCards();
+      renderPromoModal();
+      renderPromoSlideList();
+      renderCategorizedAdminProducts();
+      applyLanguage(currentLang);
+
+      // Rezervasyon tarihinde geçmiş bir gün seçilmesini engelle
+      const resDateInput = document.getElementById('resDate');
+      if (resDateInput) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        resDateInput.min = `${yyyy}-${mm}-${dd}`;
+      }
+
+      setTimeout(() => {
+        const promoModal = new bootstrap.Modal(document.getElementById('promoModal'));
+        promoModal.show();
+      }, 300);
+    });
+
+    // MODALLAR ARASI GEÇİŞ
+    function openChoiceModal() {
+      new bootstrap.Modal(document.getElementById('choiceModal')).show();
+    }
+
+    function switchToFormModal() {
+      const choiceEl = document.getElementById('choiceModal');
+      const choiceModalInst = bootstrap.Modal.getInstance(choiceEl);
+      if(choiceModalInst) choiceModalInst.hide();
+
+      setTimeout(() => {
+        new bootstrap.Modal(document.getElementById('reservationModal')).show();
+      }, 300);
+    }
+
+    // DİNAMİK PAZAR KAHVALTISI / SAAT SEÇİMİ
+    function handleDateChange(selectedDateStr) {
+      const timeSelect = document.getElementById('resTime');
+      timeSelect.innerHTML = '';
+      timeSelect.disabled = false;
+
+      if (!selectedDateStr) {
+        timeSelect.disabled = true;
+        timeSelect.innerHTML = '<option value="" disabled selected>Önce Tarih Seçiniz</option>';
+        return;
+      }
+
+      const dateObj = new Date(selectedDateStr);
+      const isSunday = dateObj.getDay() === 0;
+
+      if (isSunday) {
+        timeSelect.innerHTML = `
+          <option value="" disabled selected>Saat Seçiniz (Pazar)</option>
+          <optgroup label="🍳 PAZAR KAHVALTISI">
+            <option value="10:00 (Pazar Kahvaltısı)">10:00</option>
+            <option value="10:30 (Pazar Kahvaltısı)">10:30</option>
+            <option value="11:00 (Pazar Kahvaltısı)">11:00</option>
+            <option value="11:30 (Pazar Kahvaltısı)">11:30</option>
+            <option value="12:00 (Pazar Kahvaltısı)">12:00</option>
+            <option value="12:30 (Pazar Kahvaltısı)">12:30</option>
+            <option value="13:00 (Pazar Kahvaltısı)">13:00</option>
+            <option value="13:30 (Pazar Kahvaltısı)">13:30</option>
+            <option value="14:00 (Pazar Kahvaltısı)">14:00</option>
+            <option value="14:30 (Pazar Kahvaltısı Son)">14:30</option>
+          </optgroup>
+          <optgroup label="🍽️ AKŞAM YEMEĞİ">
+            <option value="16:00">16:00</option>
+            <option value="17:00">17:00</option>
+            <option value="18:00">18:00</option>
+            <option value="19:00">19:00</option>
+            <option value="20:00">20:00</option>
+            <option value="21:00">21:00</option>
+            <option value="22:00">22:00</option>
+            <option value="23:00">23:00</option>
+          </optgroup>
+        `;
+      } else {
+        timeSelect.innerHTML = `
+          <option value="" disabled selected>Saat Seçiniz</option>
+          <optgroup label="🍽️ YEMEK & SERVİS SAATLERİ">
+            <option value="16:00">16:00</option>
+            <option value="16:30">16:30</option>
+            <option value="17:00">17:00</option>
+            <option value="17:30">17:30</option>
+            <option value="18:00">18:00</option>
+            <option value="18:30">18:30</option>
+            <option value="19:00">19:00</option>
+            <option value="19:30">19:30</option>
+            <option value="20:00">20:00</option>
+            <option value="20:30">20:30</option>
+            <option value="21:00">21:00</option>
+            <option value="21:30">21:30</option>
+            <option value="22:00">22:00</option>
+            <option value="22:30">22:30</option>
+            <option value="23:00">23:00</option>
+            <option value="23:30">23:30</option>
+            <option value="00:00">00:00</option>
+          </optgroup>
+        `;
+      }
+    }
+
+    // REZERVASYON FORMU WHATSAPP YÖNLENDİRMESİ
+    function sendReservationToWhatsApp(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('resName').value.trim();
+      const phone = document.getElementById('resPhone').value.trim();
+      const guests = document.getElementById('resGuests').value;
+      const date = document.getElementById('resDate').value;
+      const time = document.getElementById('resTime').value;
+      const eventType = document.getElementById('resEvent').value;
+      const note = document.getElementById('resNote').value.trim() || 'Yok';
+
+      let message = `*PERA TERAS REZERVASYON TALEBİ*\n\n`;
+      message += `👤 *Ad Soyad:* ${name}\n`;
+      message += `📞 *Telefon:* ${phone}\n`;
+      message += `👥 *Kişi Sayısı:* ${guests}\n`;
+      message += `📅 *Tarih:* ${date}\n`;
+      message += `⏰ *Saat:* ${time}\n`;
+      message += `🎉 *Özel Etkinlik:* ${eventType}\n`;
+      message += `📝 *Özel Not/İstek:* ${note}`;
+
+      const encodedMsg = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/905306261796?text=${encodedMsg}`;
+      
+      window.open(whatsappUrl, '_blank');
+    }
+
+    // ANA EKRAN MENÜ KARTLARI
+    function renderMenuCards() {
+      const grid = document.getElementById('menuGrid');
+      grid.innerHTML = '';
+
+      products.forEach(p => {
+        if (!p.active) return;
+        grid.innerHTML += `
+          <div class="col-6 col-md-4 col-lg-3 menu-item-card" data-category="${p.category}" data-name="${p.name.toLowerCase()}">
+            <div class="menu-card" onclick="openProductDetail(${p.id})">
+              <div class="menu-card-img-wrapper">
+                <img src="${p.img}" alt="${p.name}">
+              </div>
+              <div class="menu-card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="fw-bold mb-0">${p.name}</h6>
+                  <span class="badge ${p.badgeColor || 'bg-warning text-dark'}">${p.badge || ''}</span>
+                </div>
+                <p class="small text-muted mb-2 text-truncate">${p.desc || ''}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-bold text-warning fs-5">${p.price}</span>
+                  <span class="small text-muted">${p.categoryName || p.category}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      applyMenuFilters();
+    }
+
+    function openProductDetail(id) {
+      const item = products.find(p => p.id === id);
+      if(item) {
+        document.getElementById('modalProductTitle').innerText = item.name;
+        document.getElementById('modalProductImg').src = item.img;
+        document.getElementById('modalProductBadge').innerText = item.badge || 'Nefis Lezzet';
+        document.getElementById('modalProductPrice').innerText = item.price;
+        document.getElementById('modalProductDesc').innerText = item.desc || 'Harika bir teras lezzeti.';
+        
+        new bootstrap.Modal(document.getElementById('productDetailModal')).show();
+      }
+    }
+
+    // POP-UP GÖSTERİMİ
+    function renderPromoModal() {
+      const carouselInner = document.getElementById('popupCarouselInner');
+      const dialog = document.getElementById('promoDialog');
+      carouselInner.innerHTML = '';
+
+      if (promoSlides.length > 0) {
+        const firstFmt = promoSlides[0].format || 'vertical';
+        dialog.className = `modal-dialog modal-dialog-centered ${firstFmt === 'vertical' ? 'promo-modal-dialog-vertical' : 'promo-modal-dialog-horizontal'}`;
+      }
+
+      promoSlides.forEach((slide, index) => {
+        const posX = slide.x || 0;
+        const posY = slide.y || 0;
+        const fmt = slide.format || 'vertical';
+        const w = slide.width || (fmt === 'vertical' ? 350 : 500);
+
+        carouselInner.innerHTML += `
+          <div class="carousel-item ${index === 0 ? 'active' : ''}">
+            <div class="promo-carousel-container ${fmt}">
+              <img src="${slide.img}" class="promo-carousel-img" style="width:${w}px; transform: translate(${posX}px, ${posY}px);">
+            </div>
+            <div class="p-3 text-center bg-dark text-white">
+              <h5 class="fw-bold mb-1" style="font-family: serif;">${slide.title}</h5>
+              <p class="text-muted small mb-0">${slide.desc}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // YÖNETİM PANELİNDE ÇİZİLİ ALANLI KIRPMA TUVALİ
+    function renderPromoSlideList() {
+      const container = document.getElementById('promoSlideList');
+      container.innerHTML = '';
+
+      promoSlides.forEach((slide, index) => {
+        const fmt = slide.format || 'vertical';
+        const w = slide.width || (fmt === 'vertical' ? 300 : 450);
+
+        container.innerHTML += `
+          <div class="col-md-6">
+            <div class="card bg-dark border-secondary p-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge bg-warning text-dark fw-bold">Slayt #${index + 1}</span>
+                <button class="btn btn-sm btn-outline-danger" onclick="deletePromoSlide(${slide.id})"><i class="fa-solid fa-trash"></i> Sil</button>
+              </div>
+
+              <!-- FORMAT SEÇİMİ -->
+              <div class="mb-2">
+                <label class="form-label small text-warning fw-bold"><i class="fa-solid fa-display me-1"></i>Görünüm Formatı Seçin:</label>
+                <select class="form-select form-select-sm" id="fmt-${slide.id}" onchange="changeSlideFormat(${slide.id}, this.value)">
+                  <option value="vertical" ${fmt === 'vertical' ? 'selected' : ''}>Mobil Dikey (9:16 Formatı)</option>
+                  <option value="horizontal" ${fmt === 'horizontal' ? 'selected' : ''}>Masaüstü Yatay (16:9 Formatı)</option>
+                </select>
+              </div>
+              
+              <div class="text-light small mb-1"><i class="fa-solid fa-hand-pointer text-warning me-1"></i>Resmi mouse ile tutup **çizili alan içine** sürükleyin:</div>
+              
+              <!-- KIRPMA TUVALİ -->
+              <div class="crop-stage mb-2">
+                <div class="crop-overlay-frame ${fmt}" id="frame-${slide.id}">
+                  <span class="crop-overlay-label">SİTEDE GÖRÜNECEK ALAN</span>
+                </div>
+                <img src="${slide.img}" class="crop-img-target" id="crop-img-${slide.id}" style="width:${w}px; left: ${slide.x || 0}px; top: ${slide.y || 0}px;">
+              </div>
+
+              <!-- RESİM BÜYÜKLÜK AYARI -->
+              <div class="mb-2">
+                <label class="form-label small text-muted">Resim Ölçeği / Boyutu:</label>
+                <input type="range" class="form-range" min="150" max="800" value="${w}" oninput="changeImageScale(${slide.id}, this.value)">
+              </div>
+
+              <div class="mb-2">
+                <label class="form-label small text-warning">Resim Yükle veya Link Yapıştır</label>
+                <input type="file" class="form-control form-control-sm mb-1" accept="image/*" onchange="handleFileSelect(event, ${slide.id})">
+                <input type="text" class="form-control form-control-sm" placeholder="Resim URL..." value="${slide.img.startsWith('data:') ? '' : slide.img}" oninput="handleUrlInput(this.value, ${slide.id})">
+              </div>
+              <div class="mb-2">
+                <label class="form-label small">Başlık</label>
+                <input type="text" class="form-control form-control-sm" id="title-${slide.id}" value="${slide.title}">
+              </div>
+              <div class="mb-2">
+                <label class="form-label small">Açıklama</label>
+                <input type="text" class="form-control form-control-sm" id="desc-${slide.id}" value="${slide.desc}">
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      setTimeout(() => {
+        promoSlides.forEach(slide => {
+          makeDraggable(slide.id);
+        });
+      }, 100);
+    }
+
+    function changeSlideFormat(slideId, formatVal) {
+      const slide = promoSlides.find(s => s.id === slideId);
+      if(slide) {
+        slide.format = formatVal;
+        renderPromoSlideList();
+      }
+    }
+
+    function changeImageScale(slideId, scaleVal) {
+      const slide = promoSlides.find(s => s.id === slideId);
+      if(slide) {
+        slide.width = parseInt(scaleVal);
+        const img = document.getElementById(`crop-img-${slideId}`);
+        if(img) img.style.width = scaleVal + 'px';
+      }
+    }
+
+    // Sürükleme durumunu tek bir yerde tutuyoruz, böylece her render'da
+    // window'a yeni mousemove/mouseup dinleyicisi eklenip birikmiyor (bellek sızıntısı yok).
+    const dragState = { active: false, slideId: null, img: null, startX: 0, startY: 0, origX: 0, origY: 0 };
+    let dragListenersInitialized = false;
+
+    function getPointer(e) {
+      if (e.touches && e.touches.length > 0) {
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    function dragStart(e, slideId) {
+      const img = document.getElementById(`crop-img-${slideId}`);
+      if(!img) return;
+      e.preventDefault();
+      const p = getPointer(e);
+      dragState.active = true;
+      dragState.slideId = slideId;
+      dragState.img = img;
+      dragState.startX = p.x;
+      dragState.startY = p.y;
+      dragState.origX = parseInt(img.style.left) || 0;
+      dragState.origY = parseInt(img.style.top) || 0;
+    }
+
+    function dragMove(e) {
+      if (!dragState.active) return;
+      if (e.touches) e.preventDefault();
+      const p = getPointer(e);
+      const dx = p.x - dragState.startX;
+      const dy = p.y - dragState.startY;
+      const newX = dragState.origX + dx;
+      const newY = dragState.origY + dy;
+      dragState.img.style.left = newX + 'px';
+      dragState.img.style.top = newY + 'px';
+
+      const slide = promoSlides.find(s => s.id === dragState.slideId);
+      if(slide) {
+        slide.x = newX;
+        slide.y = newY;
+      }
+    }
+
+    function dragEnd() {
+      dragState.active = false;
+      dragState.img = null;
+    }
+
+    function initDragListenersOnce() {
+      if (dragListenersInitialized) return;
+      dragListenersInitialized = true;
+      window.addEventListener('mousemove', dragMove);
+      window.addEventListener('mouseup', dragEnd);
+      window.addEventListener('touchmove', dragMove, { passive: false });
+      window.addEventListener('touchend', dragEnd);
+      window.addEventListener('touchcancel', dragEnd);
+    }
+
+    function makeDraggable(slideId) {
+      const img = document.getElementById(`crop-img-${slideId}`);
+      if(!img) return;
+
+      initDragListenersOnce();
+
+      img.addEventListener('mousedown', (e) => dragStart(e, slideId));
+      img.addEventListener('touchstart', (e) => dragStart(e, slideId), { passive: false });
+    }
+
+    function handleFileSelect(event, slideId) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const slide = promoSlides.find(s => s.id === slideId);
+          if (slide) {
+            slide.img = e.target.result;
+            slide.x = 0;
+            slide.y = 0;
+            renderPromoSlideList();
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleUrlInput(url, slideId) {
+      if(url.trim() !== "") {
+        const slide = promoSlides.find(s => s.id === slideId);
+        if (slide) {
+          slide.img = url;
+          slide.x = 0;
+          slide.y = 0;
+          renderPromoSlideList();
+        }
+      }
+    }
+
+    function addPromoSlide() {
+      promoSlides.push({
+        id: Date.now(),
+        title: 'YENİ DUYURU',
+        desc: 'Açıklama metnini buraya yazabilirsiniz.',
+        img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop',
+        format: 'vertical',
+        x: 0,
+        y: 0,
+        width: 350
+      });
+      renderPromoSlideList();
+    }
+
+    function deletePromoSlide(id) {
+      if(promoSlides.length <= 1) {
+        alert("En az 1 adet Pop-Up kalmalı!");
+        return;
+      }
+      if(!confirm("Bu Pop-Up slaydı silinsin mi?")) return;
+      promoSlides = promoSlides.filter(s => s.id !== id);
+      renderPromoSlideList();
+    }
+
+    function savePromoSettings() {
+      promoSlides.forEach(s => {
+        const t = document.getElementById(`title-${s.id}`);
+        const d = document.getElementById(`desc-${s.id}`);
+        const fmt = document.getElementById(`fmt-${s.id}`);
+        if(t) s.title = t.value;
+        if(d) s.desc = d.value;
+        if(fmt) s.format = fmt.value;
+      });
+
+      try {
+        localStorage.setItem('pera_promo_slides', JSON.stringify(promoSlides));
+      } catch(e) {}
+
+      renderPromoModal();
+
+      const adminModal = bootstrap.Modal.getInstance(document.getElementById('adminModal'));
+      if(adminModal) adminModal.hide();
+
+      setTimeout(() => {
+        const promoModal = new bootstrap.Modal(document.getElementById('promoModal'));
+        promoModal.show();
+      }, 400);
+    }
+
+    // KATEGORİLERE GÖRE YÖNETİM
+    const ADMIN_CATEGORIES = [
+      { key: 'ızgara', name: 'Izgaralar & Tava' },
+      { key: 'kahvalti', name: 'Serpme Kahvaltı' },
+      { key: 'tatli', name: 'Tatlılar' },
+      { key: 'soguk', name: 'Soğuk İçecekler' }
+    ];
+
+    function renderCategorizedAdminProducts() {
+      const container = document.getElementById('adminCategorizedProducts');
+      container.innerHTML = '';
+
+      const searchInput = document.getElementById('adminProductSearch');
+      const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+      ADMIN_CATEGORIES.forEach(cat => {
+        const catProducts = products.filter(p => p.category === cat.key && (query === '' || p.name.toLowerCase().includes(query)));
+
+        // Arama yapılıp bu kategoride hiç sonuç yoksa ve arama boş değilse, kategori bloğunu hiç gösterme
+        if(query !== '' && catProducts.length === 0) return;
+
+        let html = `
+          <div class="admin-cat-header rounded">
+            <i class="fa-solid fa-layer-group me-2"></i> ${cat.name} KATEGORİSİ
+          </div>
+          <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle">
+              <thead>
+                <tr class="text-warning small">
+                  <th>Aktif</th>
+                  <th>Görsel</th>
+                  <th>Ürün Adı</th>
+                  <th>Fiyat</th>
+                  <th>Açıklama</th>
+                  <th>Rozet</th>
+                  <th>Kategori</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+
+        if(catProducts.length === 0) {
+          html += `<tr><td colspan="8" class="text-muted text-center py-3">Bu kategoride henüz ürün yok.</td></tr>`;
+        } else {
+          catProducts.forEach(p => {
+            const catOptions = ADMIN_CATEGORIES.map(c => `<option value="${c.key}" ${p.category === c.key ? 'selected' : ''}>${c.name}</option>`).join('');
+            html += `
+              <tr>
+                <td><input class="form-check-input" type="checkbox" id="pcheck-${p.id}" ${p.active ? 'checked' : ''}></td>
+                <td>
+                  <img src="${p.img}" width="40" height="40" class="rounded object-fit-cover mb-1 d-block">
+                  <input type="text" class="form-control form-control-sm" id="pimg-${p.id}" value="${p.img}" style="min-width:140px;" placeholder="Görsel URL">
+                </td>
+                <td><input type="text" class="form-control form-control-sm" id="pname-${p.id}" value="${p.name}"></td>
+                <td><input type="text" class="form-control form-control-sm" id="pprice-${p.id}" value="${p.price}"></td>
+                <td><input type="text" class="form-control form-control-sm" id="pdesc-${p.id}" value="${p.desc || ''}"></td>
+                <td><input type="text" class="form-control form-control-sm" id="pbadge-${p.id}" value="${p.badge || ''}"></td>
+                <td><select class="form-select form-select-sm" id="pcat-${p.id}" style="min-width:140px;">${catOptions}</select></td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteProductRow(${p.id})"><i class="fa-solid fa-trash"></i></button></td>
+              </tr>
+            `;
+          });
         }
 
-        /* ADMIN - POPUP SLIDER DÜZENLEME */
-        function renderAdminPromos() {
-            const list = document.getElementById('adminPromoList');
-            list.innerHTML = '';
-            promoList.forEach((promo, index) => {
-                list.innerHTML += `
-                    <div style="background:rgba(0,0,0,0.1); border:1px solid var(--border-color); padding:12px; border-radius:8px; margin-bottom:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <strong style="color:var(--accent-gold);">Kampanya Kartı #${index + 1}</strong>
-                            <button class="btn btn-danger" style="padding:4px 8px;" onclick="promoList.splice(${index},1);saveData();renderAdminPromos();">&times; Sil</button>
-                        </div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" class="form-group">
-                            <input type="text" value="${promo.badge}" placeholder="Rozet" onchange="promoList[${index}].badge=this.value;saveData()">
-                            <input type="text" value="${promo.title}" placeholder="Başlık" onchange="promoList[${index}].title=this.value;saveData()">
-                        </div>
-                        <div class="form-group">
-                            <textarea rows="2" placeholder="Açıklama" onchange="promoList[${index}].desc=this.value;saveData()">${promo.desc}</textarea>
-                        </div>
-                        <label class="file-upload-btn">
-                            <i class="fa-solid fa-image"></i> Görsel Seç
-                            <input type="file" accept="image/*" style="display:none;" onchange="handleLocalUpload(this.files[0], (url)=>{ promoList[${index}].img=url; saveData(); renderAdminPromos(); })">
-                        </label>
-                    </div>`;
-            });
+        html += `</tbody></table></div>`;
+        container.innerHTML += html;
+      });
+
+      if(query !== '' && !ADMIN_CATEGORIES.some(cat => products.some(p => p.category === cat.key && p.name.toLowerCase().includes(query)))) {
+        container.innerHTML = `<p class="text-muted text-center py-4">"${query}" ile eşleşen ürün bulunamadı.</p>`;
+      }
+    }
+
+    function addNewProductRow() {
+      products.push({
+        id: Date.now(),
+        active: true,
+        category: 'ızgara',
+        categoryName: 'Izgaralar & Tava',
+        name: 'Yeni Lezzet',
+        price: '100,00 ₺',
+        badge: 'Yeni',
+        badgeColor: 'bg-primary',
+        img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop',
+        desc: 'Taze malzemelerle hazırlanan yeni lezzetimiz.'
+      });
+      renderCategorizedAdminProducts();
+      renderMenuCards();
+    }
+
+    function deleteProductRow(id) {
+      const product = products.find(p => p.id === id);
+      const name = product ? product.name : 'bu ürünü';
+      if(!confirm(`"${name}" silinsin mi? Bu işlem geri alınamaz.`)) return;
+      products = products.filter(p => p.id !== id);
+      renderCategorizedAdminProducts();
+      renderMenuCards();
+    }
+
+    function saveAdminProducts() {
+      products.forEach(p => {
+        const check = document.getElementById(`pcheck-${p.id}`);
+        const name = document.getElementById(`pname-${p.id}`);
+        const price = document.getElementById(`pprice-${p.id}`);
+        const desc = document.getElementById(`pdesc-${p.id}`);
+        const badge = document.getElementById(`pbadge-${p.id}`);
+        const img = document.getElementById(`pimg-${p.id}`);
+        const cat = document.getElementById(`pcat-${p.id}`);
+
+        if(check) {
+          p.active = check.checked;
+          p.name = name.value;
+          p.price = price.value;
+          p.desc = desc.value;
+          p.badge = badge.value;
+          if(img && img.value.trim() !== '') p.img = img.value.trim();
+          if(cat) {
+            p.category = cat.value;
+            const found = ADMIN_CATEGORIES.find(c => c.key === cat.value);
+            p.categoryName = found ? found.name : p.categoryName;
+          }
         }
+      });
 
-        function addPromoCard() {
-            promoList.push({ badge: "YENİ KAMPANYA", title: "Başlık Girin", desc: "Açıklama girin.", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800" });
-            saveData();
-            renderAdminPromos();
+      try {
+        localStorage.setItem('pera_products', JSON.stringify(products));
+      } catch(e) {}
+
+      renderCategorizedAdminProducts();
+      renderMenuCards();
+      alert("Tüm menü başarıyla kaydedildi!");
+    }
+
+    let activeCategory = 'all';
+
+    function selectCategory(cat, element) {
+      activeCategory = cat;
+      document.querySelectorAll('.category-pill').forEach(pill => pill.classList.remove('active'));
+      element.classList.add('active');
+      applyMenuFilters();
+    }
+
+    function filterMenu() {
+      applyMenuFilters();
+    }
+
+    // Kategori ve arama filtrelerini birlikte (kesişim olarak) uygular
+    function applyMenuFilters() {
+      const query = document.getElementById('menuSearchInput').value.toLowerCase();
+      let visibleCount = 0;
+
+      document.querySelectorAll('.menu-item-card').forEach(card => {
+        const name = card.getAttribute('data-name');
+        const category = card.getAttribute('data-category');
+        const matchesCategory = activeCategory === 'all' || category === activeCategory;
+        const matchesSearch = name.includes(query);
+        const show = matchesCategory && matchesSearch;
+        card.style.display = show ? 'block' : 'none';
+        if(show) visibleCount++;
+      });
+
+      let emptyMsg = document.getElementById('menuEmptyMsg');
+      if(visibleCount === 0) {
+        if(!emptyMsg) {
+          emptyMsg = document.createElement('div');
+          emptyMsg.id = 'menuEmptyMsg';
+          emptyMsg.className = 'text-center text-muted py-5 w-100';
+          emptyMsg.innerHTML = '<i class="fa-solid fa-magnifying-glass fs-3 mb-2 d-block"></i>Aradığınız kriterlere uygun ürün bulunamadı.';
+          document.getElementById('menuGrid').appendChild(emptyMsg);
         }
+        emptyMsg.style.display = 'block';
+      } else if(emptyMsg) {
+        emptyMsg.style.display = 'none';
+      }
+    }
 
-        /* ADMIN - KATEGORİLİ ÜRÜN YÖNETİMİ & AKTİF/PASİF SLIDER */
-        function populateAdminCategoryDropdown() {
-            const select = document.getElementById('adminCategoryFilter');
-            const categories = [...new Set(menuData.map(item => item.category))];
-            select.innerHTML = '';
-            categories.forEach(cat => { select.innerHTML += `<option value="${cat}">${cat}</option>`; });
-            if(categories.length > 0) select.value = categories[0];
-        }
+    function openAdminPanel() {
+      new bootstrap.Modal(document.getElementById('passwordModal')).show();
+    }
 
-        function renderAdminTable() {
-            const selectedCat = document.getElementById('adminCategoryFilter').value;
-            const tbody = document.getElementById('adminTableBody');
-            tbody.innerHTML = '';
+    function verifyAdminPassword() {
+      const pwdInput = document.getElementById('adminPasswordInput');
+      const errorMsg = document.getElementById('adminPasswordError');
+      const pwd = pwdInput.value;
+      if (pwd === '1234' || pwd === 'admin') {
+        errorMsg.style.display = 'none';
+        pwdInput.value = '';
+        bootstrap.Modal.getInstance(document.getElementById('passwordModal')).hide();
+        new bootstrap.Modal(document.getElementById('adminModal')).show();
+      } else {
+        errorMsg.style.display = 'block';
+        pwdInput.classList.add('is-invalid');
+        pwdInput.focus();
+      }
+    }
 
-            menuData.forEach((item, index) => {
-                if(item.category === selectedCat) {
-                    const isChecked = item.active !== false ? 'checked' : '';
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="text-align:center;">
-                                <label class="switch">
-                                    <input type="checkbox" ${isChecked} onchange="toggleItemActive(${index}, this.checked)">
-                                    <span class="slider-toggle"></span>
-                                </label>
-                            </td>
-                            <td><input type="text" value="${item.category}" onchange="menuData[${index}].category=this.value;saveData();populateAdminCategoryDropdown()"></td>
-                            <td><input type="text" value="${item.name}" onchange="menuData[${index}].name=this.value;saveData()"></td>
-                            <td><input type="text" value="${item.desc||''}" placeholder="Malzemeler..." onchange="menuData[${index}].desc=this.value;saveData()"></td>
-                            <td><input type="text" value="${item.price}" onchange="menuData[${index}].price=this.value;saveData()"></td>
-                            <td><input type="text" value="${item.badge||''}" placeholder="Popüler" onchange="menuData[${index}].badge=this.value;saveData()"></td>
-                            <td>
-                                <input type="text" id="iconInput_${index}" value="${item.icons||''}" onchange="menuData[${index}].icons=this.value;saveData()">
-                                <div class="icon-selector-pills">
-                                    <span class="icon-pill" onclick="appendIcon(${index}, '👑')">👑 Şef</span>
-                                    <span class="icon-pill" onclick="appendIcon(${index}, '🌶️')">🌶️ Acı</span>
-                                    <span class="icon-pill" onclick="appendIcon(${index}, '🌱')">🌱 Vej</span>
-                                    <span class="icon-pill" onclick="appendIcon(${index}, '🌾')">🌾 Glutensiz</span>
-                                </div>
-                            </td>
-                            <td>
-                                <label class="file-upload-btn">
-                                    <i class="fa-solid fa-image"></i>
-                                    <input type="file" accept="image/*" style="display:none;" onchange="handleLocalUpload(this.files[0], (url)=>{ menuData[${index}].img=url; saveData(); renderAdminTable(); })">
-                                </label>
-                            </td>
-                            <td><button class="btn btn-danger" onclick="menuData.splice(${index},1);saveData();renderAdminTable();">&times;</button></td>
-                        </tr>`;
-                }
-            });
-        }
-
-        function toggleItemActive(index, status) {
-            menuData[index].active = status;
-            saveData();
-        }
-
-        function appendIcon(index, icon) {
-            const input = document.getElementById(`iconInput_${index}`);
-            if(!input.value.includes(icon)) {
-                input.value = input.value ? `${input.value},${icon}` : icon;
-                menuData[index].icons = input.value;
-                saveData();
-            }
-        }
-
-        function addNewRow() {
-            const currentSelectedCat = document.getElementById('adminCategoryFilter').value || "Yeni Kategori";
-            menuData.push({ category: currentSelectedCat, name: "Yeni Ürün", desc: "", price: "0,00 ₺", badge: "", icons: "", active: true, img: "" });
-            saveData();
-            populateAdminCategoryDropdown();
-            renderAdminTable();
-        }
-
-        /* EXCEL YÜKLEME */
-        function handleExcelUpload(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const sheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[sheetName];
-                const json = XLSX.utils.sheet_to_json(worksheet);
-
-                if(json.length > 0) {
-                    menuData = json.map(row => ({
-                        category: row.Kategori || "Genel",
-                        name: row.UrunAdi || "Ürün",
-                        desc: row.Aciklama || "",
-                        price: row.Fiyat || "0,00 ₺",
-                        badge: row.Rozet || "",
-                        icons: row.Ikonlar || "",
-                        active: row.Aktif !== undefined ? Boolean(row.Aktif) : true,
-                        img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500"
-                    }));
-                    saveData();
-                    populateAdminCategoryDropdown();
-                    renderAdminTable();
-                    alert("Excel başarıyla yüklendi!");
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function downloadExcelTemplate() {
-            const templateData = [
-                { Kategori: "Sıcak İçecekler", UrunAdi: "Türk Kahvesi", Aciklama: "Lokum ve su ile", Fiyat: "175,00 ₺", Rozet: "Popüler", Ikonlar: "👑", Aktif: 1 },
-                { Kategori: "Izgaralar", UrunAdi: "Kuzu Pirzola", Aciklama: "Pilav ve garnitür ile", Fiyat: "850,00 ₺", Rozet: "Spesyal", Ikonlar: "👑,🌶️", Aktif: 1 }
-            ];
-            const ws = XLSX.utils.json_to_sheet(templateData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "MenuTemplate");
-            XLSX.writeFile(wb, "Pera_Teras_Menu_Sablon.xlsx");
-        }
-
-        /* İLETİŞİM AYARLARI */
-        function loadContactToAdmin() {
-            document.getElementById('cfgPhone').value = contactConfig.phone;
-            document.getElementById('cfgWhatsapp').value = contactConfig.whatsapp;
-            document.getElementById('cfgAddress').value = contactConfig.address;
-            document.getElementById('cfgDirections').value = contactConfig.directions;
-            document.getElementById('cfgMapLink').value = contactConfig.mapLink;
-        }
-
-        function saveContactConfig() {
-            contactConfig.phone = document.getElementById('cfgPhone').value;
-            contactConfig.whatsapp = document.getElementById('cfgWhatsapp').value;
-            contactConfig.address = document.getElementById('cfgAddress').value;
-            contactConfig.directions = document.getElementById('cfgDirections').value;
-            contactConfig.mapLink = document.getElementById('cfgMapLink').value;
-            saveData();
-        }
-
-        function resetToDefault() {
-            menuData = [...defaultMenuData];
-            saveData();
-            populateAdminCategoryDropdown();
-            renderAdminTable();
-        }
-
-        setLanguage('tr');
-        updateContactUI();
-        setTimeout(openPromoModal, 500);
-    </script>
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      document.getElementById('themeIcon').className = isLight ? 'fa-solid fa-sun me-1' : 'fa-solid fa-moon me-1';
+      const dict = translations[currentLang] || translations.tr;
+      document.getElementById('themeText').textContent = isLight ? dict.dayMode : dict.nightMode;
+    });
+  </script>
 </body>
 </html>
